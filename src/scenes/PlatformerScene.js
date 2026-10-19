@@ -163,21 +163,41 @@ export class PlatformerScene extends window.Phaser.Scene {
       : 'keris';
     this.heroTexKey = `${this.selectedCharacter}_${this.selectedWeapon}`;
 
-    // Bayangan elips di tanah tepat di bawah telapak kaki agar tidak pernah terkesan melayang
+    // Bayangan elips di tanah tepat di bawah telapak kaki
     this.playerShadow = this.add
       .ellipse(140, 636, 54, 14, 0x120905, 0.52)
       .setDepth(8);
 
+    // 1. Sprite Physics Murni (Hitbox solid yang tidak pernah di-scale saat render, bebas glitch tanah)
     this.player = this.physics.add.sprite(140, 560, this.heroTexKey);
-    this._syncHeroSpriteSize();
+    this.player.setVisible(false);
+    this.player.setDisplaySize(96, 126);
+    this.player.body.setSize(48, 106);
+    this.player.body.setOffset((this.player.width - 48) * 0.5, this.player.height - 106);
     this.player.setCollideWorldBounds(true);
     this.player.setGravityY(1020);
     this.player.setDepth(10);
 
+    // 2. Sprite Visual Karakter (Rendering independen berporos telapak kaki origin 0.5, 1.0)
+    this.heroVisual = this.add.image(140, 560, this.heroTexKey).setDepth(10);
+    this.heroVisual.setOrigin(0.5, 1.0);
+    this.heroAttackOffsetX = 0;
+
+    const tex = this.textures.get(this.heroTexKey);
+    const sourceImg = tex?.getSourceImage();
+    const natW = sourceImg?.naturalWidth || sourceImg?.width || 286;
+    const natH = sourceImg?.naturalHeight || sourceImg?.height || 337;
+    const targetH = 126;
+    const targetW = Math.round(targetH * (natW / natH));
+
+    this.heroVisual.setDisplaySize(targetW, targetH);
+    this.baseVisualScaleX = this.heroVisual.scaleX;
+    this.baseVisualScaleY = this.heroVisual.scaleY;
+
     const activeCostumeId = this.storage.state.shop.activeCostume || 'bhayangkara';
     const costumeObj = this.balance.shop.costumes.find((c) => c.id === activeCostumeId);
     if (costumeObj && costumeObj.tint && Number(costumeObj.tint) !== 0xffffff) {
-      this.player.setTint(Number(costumeObj.tint));
+      this.heroVisual.setTint(Number(costumeObj.tint));
     }
 
     this.lastCheckpoint = { x: 140, y: 550 };
@@ -288,34 +308,12 @@ export class PlatformerScene extends window.Phaser.Scene {
     this._syncHUD();
   }
 
-  _syncHeroSpriteSize() {
-    if (!this.player || !this.textures.exists(this.heroTexKey)) return;
-    const tex = this.textures.get(this.heroTexKey);
-    const sourceImg = tex?.getSourceImage();
-    const natW = sourceImg?.naturalWidth || sourceImg?.width || 286;
-    const natH = sourceImg?.naturalHeight || sourceImg?.height || 337;
-    const targetH = 126;
-    const targetW = Math.round(targetH * (natW / natH));
-
-    this.player.setDisplaySize(targetW, targetH);
-    this.baseScaleX = this.player.scaleX;
-    this.baseScaleY = this.player.scaleY;
-    this.heroNatW = natW;
-    this.heroNatH = natH;
-    this.heroTargetW = targetW;
-    this.heroTargetH = targetH;
-
-    this._syncHeroBody(false);
-  }
-
   _syncHeroBody(isCrouching = false) {
     if (!this.player?.body) return;
-    const natW = this.heroNatW || 286;
-    const natH = this.heroNatH || 337;
-    const bw = Math.round(natW * 0.44);
-    const bh = Math.round(natH * (isCrouching ? 0.52 : 0.84));
-    const ox = Math.round((natW - bw) * 0.5);
-    const oy = Math.round(natH - bh - 6);
+    const bw = 48;
+    const bh = isCrouching ? 58 : 106;
+    const ox = (this.player.width - bw) * 0.5;
+    const oy = this.player.height - bh;
     this.player.body.setSize(bw, bh);
     this.player.body.setOffset(ox, oy);
   }
@@ -919,11 +917,12 @@ export class PlatformerScene extends window.Phaser.Scene {
     // Jika anak panah habis, lakukan pukulan busur jarak dekat & beri tahu pemain untuk ambil loot panah!
     if (this.arrows <= 0) {
       this._showFloatingText(this.player.x, this.player.y - 48, 'Panah Habis! Ambil Panah (+5) di Arena!', '#E76F51');
+      this.heroAttackOffsetX = this.facing * 8;
       this.tweens.add({
-        targets: this.player,
-        x: this.player.x + this.facing * 8,
-        duration: 70,
-        yoyo: true
+        targets: this,
+        heroAttackOffsetX: 0,
+        duration: 75,
+        ease: 'Quad.easeOut'
       });
       const hitX = this.player.x + this.facing * 54;
       const hitY = this.player.y - (this.isCrouching ? -8 : 6);
@@ -949,12 +948,12 @@ export class PlatformerScene extends window.Phaser.Scene {
     if (aimUp) angleDeg = -28;
     else if (aimDown) angleDeg = 28;
 
-    // Hentakan tembakan busur pada tubuh karakter
+    // Hentakan tembakan busur pada visual karakter
+    this.heroAttackOffsetX = -this.facing * 8;
     this.tweens.add({
-      targets: this.player,
-      x: this.player.x - this.facing * 7,
-      duration: 65,
-      yoyo: true,
+      targets: this,
+      heroAttackOffsetX: 0,
+      duration: 85,
       ease: 'Quad.easeOut'
     });
 
@@ -994,12 +993,12 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.comboResetTimer = now + 950;
     this.audioSys.playPunch(this.comboStep);
 
-    // Hentakan tusukan tombak waos ke depan
+    // Dorongan tusukan tombak waos pada visual karakter
+    this.heroAttackOffsetX = this.facing * 16;
     this.tweens.add({
-      targets: this.player,
-      x: this.player.x + this.facing * 16,
-      duration: 80,
-      yoyo: true,
+      targets: this,
+      heroAttackOffsetX: 0,
+      duration: 90,
       ease: 'Quad.easeOut'
     });
 
@@ -1056,12 +1055,12 @@ export class PlatformerScene extends window.Phaser.Scene {
     }
     dmg = Math.round(dmg * this.damageMultiplier);
 
-    // Hentakan tebasan keris maju ke depan
+    // Hentakan tebasan keris maju ke depan pada visual karakter
+    this.heroAttackOffsetX = this.facing * 12;
     this.tweens.add({
-      targets: this.player,
-      x: this.player.x + this.facing * 10,
-      duration: 70,
-      yoyo: true,
+      targets: this,
+      heroAttackOffsetX: 0,
+      duration: 75,
       ease: 'Quad.easeOut'
     });
 
@@ -1238,11 +1237,11 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.isDashing = true;
 
     this.player.setVelocityX(this.facing * this.balance.hero.dashSpeed);
-    this.player.setAlpha(0.6);
+    this.heroVisual?.setAlpha(0.6);
     this._spawnStepDust(this.player.x, this.player.body.bottom, 3);
     this.time.delayedCall(this.balance.hero.dashDurationMs, () => {
       this.isDashing = false;
-      this.player.setAlpha(1);
+      this.heroVisual?.setAlpha(1);
     });
   }
 
@@ -1503,6 +1502,20 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.cameras.main.shake(90, 0.005);
     this._showFloatingText(this.player.x, this.player.y - 50, `-${dmg} HP`, '#B4492F');
 
+    if (this.heroVisual) {
+      this.heroVisual.setTint(0xff6666);
+      this.time.delayedCall(160, () => {
+        if (!this.heroVisual?.active) return;
+        const activeCostumeId = this.storage.state.shop.activeCostume || 'bhayangkara';
+        const costumeObj = this.balance.shop.costumes.find((c) => c.id === activeCostumeId);
+        if (costumeObj && costumeObj.tint && Number(costumeObj.tint) !== 0xffffff) {
+          this.heroVisual.setTint(Number(costumeObj.tint));
+        } else {
+          this.heroVisual.clearTint();
+        }
+      });
+    }
+
     if (this.hp <= 0) {
       this.hp = this.maxHp;
       this.player.setPosition(this.lastCheckpoint.x, this.lastCheckpoint.y - 30);
@@ -1611,50 +1624,60 @@ export class PlatformerScene extends window.Phaser.Scene {
       }
     }
 
-    // 3. State Machine Animasi Pose Karakter (Jalan Dinamis, Nunduk/Jongkok, Persiapan Loncat, Melayang, Mendarat)
-    const baseSx = Math.abs(this.baseScaleX || this.player.scaleX);
-    const baseSy = Math.abs(this.baseScaleY || this.player.scaleY);
+    // 3. State Machine Animasi Pose Karakter (Visual Bebas Glitch, Berporos di Telapak Kaki)
+    const footX = this.player.x + (this.heroAttackOffsetX || 0);
+    const footY = this.player.body.bottom;
+    const baseSx = this.baseVisualScaleX;
+    const baseSy = this.baseVisualScaleY;
+
+    this.heroVisual.setFlipX(this.facing < 0);
 
     if (time < this.jumpPrepUntil) {
       // Persiapan loncat (jongkok sekejap)
-      this.player.setScale(baseSx * 1.14, baseSy * 0.78);
-      this.player.setAngle(this.facing * 2);
+      this.heroVisual.setPosition(footX, footY);
+      this.heroVisual.setScale(baseSx * 1.08, baseSy * 0.82);
+      this.heroVisual.setAngle(this.facing * 2);
     } else if (!onGround) {
+      this.heroVisual.setPosition(footX, footY);
       if (this.player.body.velocity.y < -35) {
         // Melenting ke atas (stretch vertikal)
-        this.player.setScale(baseSx * 0.92, baseSy * 1.12);
-        this.player.setAngle(-this.facing * 3);
+        this.heroVisual.setScale(baseSx * 0.94, baseSy * 1.08);
+        this.heroVisual.setAngle(-this.facing * 3);
       } else {
         // Meluncur turun (condong ke depan arah gerak)
-        this.player.setScale(baseSx * 1.04, baseSy * 0.96);
-        this.player.setAngle(this.facing * 5);
+        this.heroVisual.setScale(baseSx * 1.02, baseSy * 0.98);
+        this.heroVisual.setAngle(this.facing * 4);
       }
     } else if (time < this.landAnimUntil || crouchDown) {
-      // Nunduk / Mendarat (jongkok rendah & hitbox mengecil)
-      this.player.setScale(baseSx * 1.12, baseSy * 0.76);
-      this.player.setAngle(0);
+      // Nunduk / Mendarat (jongkok rendah & telapak kaki tetap menapak tanah)
+      this.heroVisual.setPosition(footX, footY);
+      this.heroVisual.setScale(baseSx * 1.1, baseSy * (crouchDown ? 0.72 : 0.88));
+      this.heroVisual.setAngle(0);
     } else if (Math.abs(this.player.body.velocity.x) > 15) {
-      // Langkah kaki berirama (bobbing langkah + kemiringan gerak)
+      // Berjalan dinamis: langkah kaki mengangkat berirama & badan condong maju
       const stepCycle = time * 0.016;
-      const bobScaleY = 1.0 + Math.sin(stepCycle) * 0.038;
-      const walkTilt = this.facing * Math.sin(stepCycle) * 3.6;
-      this.player.setScale(baseSx * 0.98, baseSy * bobScaleY);
-      this.player.setAngle(walkTilt);
+      const stepBobY = Math.abs(Math.sin(stepCycle)) * 2.8;
+      const walkTilt = this.facing * Math.sin(stepCycle) * 3.2;
+
+      this.heroVisual.setPosition(footX, footY - stepBobY);
+      this.heroVisual.setScale(baseSx, baseSy);
+      this.heroVisual.setAngle(walkTilt);
 
       if (time > this.stepDustTimer) {
         this.stepDustTimer = time + 240;
-        this._spawnStepDust(this.player.x - this.facing * 10, this.player.body.bottom, 1);
+        this._spawnStepDust(footX - this.facing * 10, footY, 1);
       }
     } else {
-      // Idle bernapas halus (subtle breathing cycle)
-      const breath = Math.sin(time * 0.0035) * 0.022;
-      this.player.setScale(baseSx * (1.0 - breath * 0.35), baseSy * (1.0 + breath));
-      this.player.setAngle(0);
+      // Diam / Stay di tempat: bernapas halus tanpa pergeseran tanah
+      const breath = Math.sin(time * 0.0035) * 0.018;
+      this.heroVisual.setPosition(footX, footY);
+      this.heroVisual.setScale(baseSx, baseSy * (1.0 + breath));
+      this.heroVisual.setAngle(0);
     }
 
     // Update Bayangan Tanah di Bawah Kaki Karakter
     if (this.playerShadow) {
-      this.playerShadow.setPosition(this.player.x, this.player.body.bottom - 2);
+      this.playerShadow.setPosition(this.player.x, footY - 2);
       this.playerShadow.setAlpha(onGround ? 0.52 : 0.24);
       this.playerShadow.setScale(onGround ? (crouchDown ? 1.18 : 1.0) : 0.72);
     }
