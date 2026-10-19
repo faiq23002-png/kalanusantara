@@ -17,22 +17,24 @@ jobs:
         with:
           node-version: 20
 
-      - name: Setup Java JDK 17 for Android Gradle
+      - name: Setup Java JDK 21 for Android Gradle
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Prepare Static Web Bundle in dist/
         run: |
           mkdir -p dist
           cp -r index.html public src dist/
-          sed -i 's|"webDir": "."|"webDir": "dist"|g' capacitor.config.json
 
-      - name: Install Capacitor & Generate Android Project
+      - name: Install Dependencies
         run: |
-          npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/screen-orientation @capacitor/haptics @capacitor/preferences
-          npx cap add android
+          npm install
+
+      - name: Add Android & Sync Assets
+        run: |
+          npx cap add android || true
           npx cap sync android
 
       - name: Compile Debug APK via Gradle

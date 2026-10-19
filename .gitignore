@@ -5,3 +5,10 @@ build/
 *.log
 .env
 .env.local
+
+# Android build artifacts
+android/app/build/
+android/.gradle/
+android/local.properties
+dist/
+

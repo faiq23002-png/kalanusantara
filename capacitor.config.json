@@ -1,8 +1,7 @@
 {
   "appId": "id.kalanusantara.majapahit",
   "appName": "Kala Nusantara: Bhayangkara Majapahit",
-  "webDir": ".",
-  "bundledWebRuntime": false,
+  "webDir": "dist",
   "server": {
     "androidScheme": "https"
   },
