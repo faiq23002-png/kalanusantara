@@ -338,6 +338,12 @@ class KalaNusantaraApp {
       }
     });
 
+    // 0. Tombol Kunci Landscape Manual di Hint Layar & Interaksi Pertama
+    document.getElementById('btn-force-landscape')?.addEventListener('click', () => {
+      this._lockLandscapeAndFullscreen();
+    });
+    window.addEventListener('pointerdown', () => this._lockLandscapeAndFullscreen(), { once: true, passive: true });
+
     // 1. "Ketuk untuk Mulai" -> Buka Audio + Kunci Landscape + Lanjut ke Intro / Setup / Beranda
     document.getElementById('btn-tap-to-start')?.addEventListener('click', () => {
       this.audio.unlock();
@@ -652,6 +658,7 @@ class KalaNusantaraApp {
   // 2. INTRO NETRAL (Video MP4 dengan Fallback Storyboard Netral + Tombol Lewati)
   // ==========================================================================
   openIntroSequence() {
+    this._lockLandscapeAndFullscreen();
     document.getElementById('intro-screen')?.classList.remove('hidden');
     this.introSlideIdx = 0;
     this._renderIntroSlide();
@@ -2002,6 +2009,36 @@ class KalaNusantaraApp {
           scene.touchInput.right = true;
         }
       }, 80);
+    } else if (v3View === 'gameplay_keris') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+          document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          scene.player.setPosition(480, 560);
+          scene.touchInput.right = true;
+        }
+      }, 80);
+    } else if (v3View === 'gameplay_tier4') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+          document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          // Panjat di Lantai 4 Menara 1 (x=800, y=140)
+          scene.player.setPosition(800, 140);
+          scene.player.setVelocity(0, 0);
+          scene.cameras.main.pan(800, 240, 0);
+        }
+      }, 80);
     } else if (v3View === 'stage2') {
       this.launchGameplayStage(this.stages[1]);
     } else if (v3View === 'stage3') {
@@ -2027,8 +2064,8 @@ class KalaNusantaraApp {
           clearInterval(waitReady);
           document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
           document.getElementById('stage-intro-splash')?.classList.add('hidden');
-          scene.player.setPosition(3360, 560);
-          scene.cameras.main.centerOn(3480, 360);
+          scene.player.setPosition(6420, 560);
+          scene.cameras.main.centerOn(6540, 360);
           scene.performSkill2Keris();
           if (scene.bossUnit && scene.bossUnit.active) {
             scene._performBossJumpSlam(scene.bossUnit, -1);

@@ -133,8 +133,8 @@ export class PlatformerScene extends window.Phaser.Scene {
   }
 
   create() {
-    // Stage diperpanjang menjadi 4200px agar perjalanan jauh lebih luas!
-    const worldWidth = 4200;
+    // Stage diperpanjang menjadi 7200px agar perjalanan jauh lebih luas!
+    const worldWidth = 7200;
     const worldHeight = 720;
     this.worldWidth = worldWidth;
     this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
@@ -547,29 +547,74 @@ export class PlatformerScene extends window.Phaser.Scene {
   }
 
   // ==========================================================================
-  // LEVEL BUILDER (DIPERPANJANG SAMPAI 4200px)
+  // ==========================================================================
+  // LEVEL BUILDER (DIPERPANJANG SAMPAI 7200px DENGAN 4 LANTAI VERTIKAL BERTINGKAT)
   // ==========================================================================
   _buildStageLevel(worldWidth) {
     const groundY = 668;
     const mainTileKey = this.stageConfig.id === 2 ? 'tile_wood' : 'tile_brick';
 
     for (let x = 32; x < worldWidth; x += 64) {
-      if (x >= 1150 && x <= 1350 && this.stageConfig.id !== 4) {
+      // Lubang jurang di 3 titik strategis (stage 1, 2, 3)
+      if (
+        ((x >= 1180 && x <= 1360) ||
+         (x >= 3480 && x <= 3660) ||
+         (x >= 5860 && x <= 6040)) &&
+        this.stageConfig.id !== 4
+      ) {
         continue;
       }
       const tile = this.platforms.create(x, groundY, mainTileKey);
       tile.setDisplaySize(64, 64).refreshBody();
     }
 
-    // Platform Bertingkat Sepanjang 4200px
+    // Platform Bertingkat 3 - 4 Lantai Menjulang ke Atas (Lantai 1: y=545, Lantai 2: y=425, Lantai 3: y=305, Lantai 4: y=185)
     const platformLayouts = [
-      { x: 420, y: 525, count: 4 },
-      { x: 820, y: 425, count: 4 },
-      { x: 1520, y: 515, count: 5 },
-      { x: 1960, y: 410, count: 4 },
-      { x: 2380, y: 510, count: 4 },
-      { x: 2780, y: 415, count: 4 },
-      { x: 3180, y: 515, count: 5 }
+      // === SEKSI 1: Gapura Wringin Lawang & Menara Candi 1 (x = 380 .. 1150) ===
+      { x: 380, y: 545, count: 4 }, // Lantai 1
+      { x: 500, y: 425, count: 5 }, // Lantai 2
+      { x: 660, y: 305, count: 4 }, // Lantai 3
+      { x: 800, y: 185, count: 4 }, // Lantai 4 (Puncak Menara 1)
+      { x: 980, y: 305, count: 3 }, // Jembatan penghubung atas
+      { x: 1040, y: 425, count: 3 },
+
+      // === SEKSI 2: Benteng Pertahanan Kosod & Terowongan (x = 1450 .. 2350) ===
+      { x: 1460, y: 545, count: 5 }, // Lantai 1
+      { x: 1600, y: 425, count: 5 }, // Lantai 2 (Lokasi Bata Retak)
+      { x: 1760, y: 305, count: 4 }, // Lantai 3
+      { x: 1900, y: 185, count: 4 }, // Lantai 4 (Puncak Benteng 2)
+      { x: 2060, y: 285, count: 3 }, // Skyway
+      { x: 2200, y: 410, count: 4 }, // Tangga turun
+
+      // === SEKSI 3: Taman Sari & Menara Pengintai Wilwatikta (x = 2550 .. 3450) ===
+      { x: 2580, y: 545, count: 4 }, // Lantai 1
+      { x: 2720, y: 425, count: 5 }, // Lantai 2
+      { x: 2880, y: 305, count: 4 }, // Lantai 3
+      { x: 3020, y: 185, count: 4 }, // Lantai 4 (Puncak Menara 3)
+      { x: 3180, y: 285, count: 3 },
+      { x: 3320, y: 410, count: 4 },
+
+      // === SEKSI 4: Candi Petirtaan & Terowongan Air Kuno (x = 3680 .. 4650) ===
+      { x: 3700, y: 545, count: 5 }, // Lantai 1
+      { x: 3840, y: 425, count: 4 }, // Lantai 2
+      { x: 3980, y: 305, count: 5 }, // Lantai 3
+      { x: 4140, y: 185, count: 4 }, // Lantai 4 (Puncak Petirtaan 4)
+      { x: 4320, y: 290, count: 3 },
+      { x: 4460, y: 415, count: 4 },
+
+      // === SEKSI 5: Bale Agung & Kompleks Keraton Majapahit (x = 4900 .. 5850) ===
+      { x: 4940, y: 545, count: 4 }, // Lantai 1
+      { x: 5080, y: 425, count: 5 }, // Lantai 2
+      { x: 5240, y: 305, count: 4 }, // Lantai 3
+      { x: 5380, y: 185, count: 4 }, // Lantai 4 (Puncak Keraton 5)
+      { x: 5560, y: 285, count: 3 },
+      { x: 5700, y: 410, count: 4 },
+
+      // === SEKSI 6: Pelataran Agung & Arena Penjaga Kala (x = 6050 .. 6800) ===
+      { x: 6080, y: 545, count: 5 }, // Lantai 1
+      { x: 6220, y: 425, count: 4 }, // Lantai 2
+      { x: 6360, y: 305, count: 4 }, // Lantai 3
+      { x: 6500, y: 185, count: 4 }  // Lantai 4 (Puncak Arena)
     ];
 
     platformLayouts.forEach((p) => {
@@ -612,6 +657,16 @@ export class PlatformerScene extends window.Phaser.Scene {
         backgroundColor: '#2A1A12dd',
         padding: { x: 6, y: 3 }
       });
+
+      this.jungPlatform2 = this.movingPlatforms.create(3550, 565, 'tile_wood');
+      this.jungPlatform2.setDisplaySize(192, 40);
+      this.jungLabel2 = this.add.text(3485, 522, 'Haluan Jung Majapahit', {
+        fontFamily: 'NusantaraBody, sans-serif',
+        fontSize: '12px',
+        color: '#F2E3C2',
+        backgroundColor: '#2A1A12dd',
+        padding: { x: 6, y: 3 }
+      });
     } else if (this.stageConfig.id === 3) {
       this.switchSiwa = this.add.rectangle(880, 370, 38, 52, 0xb4492f).setStrokeStyle(2, 0xf2e3c2);
       this.add.text(840, 328, 'Arca Siwa', {
@@ -630,11 +685,14 @@ export class PlatformerScene extends window.Phaser.Scene {
       });
     }
 
-    // 3 Blok Prasasti Lempeng Batu Berukir Surya
+    // Blok Prasasti Lempeng Batu Berukir Surya di Lantai Atas (Hadiah Eksplorasi Naik ke Atas!)
     const prasastiPositions = [
-      { x: 540, y: 390, idx: 0 },
-      { x: 1680, y: 375, idx: 1 },
-      { x: 2900, y: 285, idx: 2 }
+      { x: 800, y: 135, idx: 0 },
+      { x: 1900, y: 135, idx: 1 },
+      { x: 3020, y: 135, idx: 2 },
+      { x: 4140, y: 135, idx: 0 },
+      { x: 5380, y: 135, idx: 1 },
+      { x: 6500, y: 135, idx: 2 }
     ];
     prasastiPositions.forEach((bp) => {
       const b = this.prasastiBlocks.create(bp.x, bp.y, 'block_prasasti');
@@ -650,30 +708,37 @@ export class PlatformerScene extends window.Phaser.Scene {
       });
     });
 
-    // Koin Gobog Sepanjang Stage
-    for (let i = 0; i < 22; i++) {
-      const cx = 300 + i * 165;
-      const cy = i % 2 === 0 ? 595 : 445;
+    // Koin Gobog Bertebaran di Sepanjang 7200px dan Melengkung Mengikuti Lantai 1..4
+    for (let i = 0; i < 48; i++) {
+      const cx = 280 + i * 145;
+      const tierYs = [595, 475, 355, 235];
+      const cy = tierYs[i % 4];
       const c = this.coinsGroup.create(cx, cy, 'coin_gobog');
       c.setDisplaySize(32, 32);
     }
 
-    // Looting Anak Panah (Item Quiver +5 Panah) di Sepanjang Arena
-    const quiverSpots = [
-      { x: 510, y: 480 },
-      { x: 1120, y: 590 },
-      { x: 1740, y: 470 },
-      { x: 2440, y: 465 },
-      { x: 2940, y: 370 },
-      { x: 3360, y: 590 }
-    ];
-    quiverSpots.forEach((qp) => this._spawnArrowLoot(qp.x, qp.y));
+    // Looting Anak Panah: HANYA MUNCUL JIKA PEMAIN MEMILIH SENJATA PANAH!
+    if (this.selectedWeapon === 'panah') {
+      const quiverSpots = [
+        { x: 510, y: 490 },
+        { x: 1100, y: 590 },
+        { x: 1740, y: 470 },
+        { x: 2350, y: 590 },
+        { x: 3000, y: 260 },
+        { x: 3750, y: 470 },
+        { x: 4400, y: 590 },
+        { x: 5100, y: 380 },
+        { x: 5750, y: 590 },
+        { x: 6400, y: 470 }
+      ];
+      quiverSpots.forEach((qp) => this._spawnArrowLoot(qp.x, qp.y));
+    }
 
-    // 3 Artefak dengan Ikon Asli
+    // 3 Artefak Sejarah Diletakkan di Puncak Menara Lantai 4 (Tantangan Panjat!)
     const artPositions = [
-      { x: 920, y: 360 },
-      { x: 2080, y: 345 },
-      { x: 3320, y: 445 }
+      { x: 830, y: 135 },
+      { x: 3040, y: 135 },
+      { x: 5400, y: 135 }
     ];
     this.artifactsList.slice(0, 3).forEach((art, idx) => {
       const pos = artPositions[idx] || artPositions[0];
@@ -700,9 +765,9 @@ export class PlatformerScene extends window.Phaser.Scene {
       sprite.setData('labelObj', lbl);
     });
 
-    // Checkpoint Pendopo di Tengah Stage
-    this.checkpointZone = this.add.rectangle(2250, 598, 64, 88, 0x4f6f3b, 0.4).setStrokeStyle(2, 0xd8a444);
-    this.add.text(2195, 525, 'Pendopo Pujangga', {
+    // 2 Checkpoint di Rute Panjang (x = 2450 & x = 4800)
+    this.checkpointZone1 = this.add.rectangle(2450, 598, 64, 88, 0x4f6f3b, 0.4).setStrokeStyle(2, 0xd8a444);
+    this.add.text(2385, 525, 'Pos Gapura 1', {
       fontFamily: 'NusantaraBody, sans-serif',
       fontSize: '11.5px',
       color: '#F2E3C2',
@@ -710,26 +775,39 @@ export class PlatformerScene extends window.Phaser.Scene {
       padding: { x: 5, y: 2 }
     });
 
-    // Musuh Bayangan Petarung (Melawan dengan Tinju Bela Diri!)
+    this.checkpointZone2 = this.add.rectangle(4800, 598, 64, 88, 0x4f6f3b, 0.4).setStrokeStyle(2, 0xd8a444);
+    this.add.text(4725, 525, 'Bale Wilwatikta 2', {
+      fontFamily: 'NusantaraBody, sans-serif',
+      fontSize: '11.5px',
+      color: '#F2E3C2',
+      backgroundColor: '#2A1A12dd',
+      padding: { x: 5, y: 2 }
+    });
+
+    // Musuh Bayangan Petarung di Sepanjang 7200px (di Darat & Lantai Bertingkat)
     const enemySpots = [
-      { x: 460, y: 550, type: 'bayangan_petarung' },
-      { x: 820, y: 550, type: 'bayangan_petarung' },
-      { x: 1020, y: 340, type: 'bayangan_petarung' },
-      { x: 1580, y: 550, type: 'bayangan_perisai' },
-      { x: 2040, y: 330, type: 'bayangan_petarung' },
-      { x: 2540, y: 550, type: 'bayangan_petarung' },
-      { x: 3020, y: 550, type: 'bayangan_perisai' },
-      { x: 3480, y: 550, type: 'bayangan_petarung' }
+      { x: 480, y: 550, type: 'bayangan_petarung' },
+      { x: 700, y: 260, type: 'bayangan_petarung' },
+      { x: 1040, y: 550, type: 'bayangan_petarung' },
+      { x: 1620, y: 380, type: 'bayangan_perisai' },
+      { x: 2180, y: 550, type: 'bayangan_petarung' },
+      { x: 2740, y: 380, type: 'bayangan_petarung' },
+      { x: 3260, y: 550, type: 'bayangan_perisai' },
+      { x: 3800, y: 380, type: 'bayangan_petarung' },
+      { x: 4350, y: 550, type: 'bayangan_petarung' },
+      { x: 5100, y: 380, type: 'bayangan_perisai' },
+      { x: 5650, y: 550, type: 'bayangan_petarung' },
+      { x: 6200, y: 380, type: 'bayangan_perisai' }
     ];
     enemySpots.forEach((sp) => this._spawnShadowEnemy(sp.x, sp.y, sp.type));
 
     if (this.stageConfig.id === 4) {
-      this._spawnBossKala(3620, 500);
+      this._spawnBossKala(6600, 500);
     }
 
-    // NPC Gerbang Waktu di Ujung Stage (x = 3980)
-    this.npcGate = this.add.image(3980, 582, 'npc_gajah_mada').setDisplaySize(90, 126);
-    this.add.text(3905, 492, `Gerbang Waktu\n${this.stageConfig.npcName}`, {
+    // NPC Gerbang Waktu di Ujung Stage Panjang (x = 7080)
+    this.npcGate = this.add.image(7080, 582, 'npc_gajah_mada').setDisplaySize(90, 126);
+    this.add.text(7005, 492, `Gerbang Waktu\n${this.stageConfig.npcName}`, {
       fontFamily: 'NusantaraBody, sans-serif',
       fontSize: '12.5px',
       color: '#D8A444',
@@ -740,6 +818,7 @@ export class PlatformerScene extends window.Phaser.Scene {
   }
 
   _spawnArrowLoot(x, y) {
+    if (this.selectedWeapon !== 'panah') return;
     if (!this.textures.exists('item_quiver')) return;
     const qv = this.quiversGroup.create(x, y, 'item_quiver');
     qv.setDisplaySize(44, 44);
@@ -753,12 +832,11 @@ export class PlatformerScene extends window.Phaser.Scene {
     });
     const lbl = this.add.text(x - 28, y - 34, '+5 Panah', {
       fontFamily: 'NusantaraBody, sans-serif',
-      fontSize: '10.5px',
-      fontStyle: 'bold',
+      fontSize: '11px',
       color: '#F2D27A',
-      backgroundColor: '#2A1A12cc',
-      padding: { x: 4, y: 1 }
-    }).setDepth(11);
+      backgroundColor: '#2A1A12dd',
+      padding: { x: 4, y: 2 }
+    });
     qv.setData('labelObj', lbl);
   }
 
@@ -1425,9 +1503,9 @@ export class PlatformerScene extends window.Phaser.Scene {
       const isBoss = enemy.getData('isBoss');
       enemy.destroy();
 
-      // Efek pecah aksara Kawi & drop loot anak panah!
+      // Efek pecah aksara Kawi & drop loot anak panah (HANYA jika memakai senjata panah!)
       this._spawnKawiShatter(ex, ey);
-      if (!isBoss && (this.selectedWeapon === 'panah' || Math.random() < 0.55)) {
+      if (!isBoss && this.selectedWeapon === 'panah' && Math.random() < 0.65) {
         this._spawnArrowLoot(ex, ey + 10);
       }
 
@@ -1477,7 +1555,7 @@ export class PlatformerScene extends window.Phaser.Scene {
     });
 
     const labels = ['A', 'B', 'C'];
-    const baseX = Math.max(3050, Math.min(3550, boss.x - 180));
+    const baseX = Math.max(6000, Math.min(6500, boss.x - 180));
     this.bossPillars.forEach((p) => p.destroy());
     this.bossPillars = [];
 
@@ -1576,7 +1654,9 @@ export class PlatformerScene extends window.Phaser.Scene {
 
     this.storage.addGobog(3);
     this.energy = Math.min(100, this.energy + 12);
-    this.arrows = Math.min(this.maxArrows, this.arrows + 5);
+    if (this.selectedWeapon === 'panah') {
+      this.arrows = Math.min(this.maxArrows, this.arrows + 5);
+    }
     this.audioSys.playCoinGobog();
 
     const fact = block.getData('factText');
@@ -1744,12 +1824,22 @@ export class PlatformerScene extends window.Phaser.Scene {
         }
         this.audioSys.playQuizFeedback(true);
       }
-    } else if (this.stageConfig.id === 2 && this.jungPlatform) {
-      this.jungPlatform.x = 1250 + Math.sin(time * 0.0022) * 95;
-      this.jungPlatform.y = 565 + Math.cos(time * 0.003) * 16;
-      this.jungPlatform.body.updateFromGameObject();
-      if (this.jungLabel) {
-        this.jungLabel.setPosition(this.jungPlatform.x - 65, this.jungPlatform.y - 42);
+    } else if (this.stageConfig.id === 2) {
+      if (this.jungPlatform) {
+        this.jungPlatform.x = 1250 + Math.sin(time * 0.0022) * 95;
+        this.jungPlatform.y = 565 + Math.cos(time * 0.003) * 16;
+        this.jungPlatform.body.updateFromGameObject();
+        if (this.jungLabel) {
+          this.jungLabel.setPosition(this.jungPlatform.x - 65, this.jungPlatform.y - 42);
+        }
+      }
+      if (this.jungPlatform2) {
+        this.jungPlatform2.x = 3550 + Math.sin(time * 0.002) * 95;
+        this.jungPlatform2.y = 565 + Math.cos(time * 0.0028) * 16;
+        this.jungPlatform2.body.updateFromGameObject();
+        if (this.jungLabel2) {
+          this.jungLabel2.setPosition(this.jungPlatform2.x - 65, this.jungPlatform2.y - 42);
+        }
       }
     } else if (this.stageConfig.id === 3 && !this.brickBridgeBuilt) {
       if (this.switchSiwa && window.Phaser.Math.Distance.Between(this.player.x, this.player.y, this.switchSiwa.x, this.switchSiwa.y) < 55) {
@@ -1770,12 +1860,22 @@ export class PlatformerScene extends window.Phaser.Scene {
       }
     }
 
-    if (this.checkpointZone && Math.abs(this.player.x - 2250) < 52 && !this.checkpointReached) {
-      this.checkpointReached = true;
-      this.lastCheckpoint = { x: 2250, y: 550 };
+    if (this.checkpointZone1 && Math.abs(this.player.x - 2450) < 55 && !this.checkpoint1Reached) {
+      this.checkpoint1Reached = true;
+      this.lastCheckpoint = { x: 2450, y: 550 };
       this.hp = this.maxHp;
-      this.damageMultiplier = 1.35;
+      this.damageMultiplier = 1.25;
       this.audioSys.playQuizFeedback(true);
+      this._showFloatingText(2450, 500, 'Checkpoint 1 Tersimpan!', '#D8A444');
+      this._syncHUD();
+    }
+    if (this.checkpointZone2 && Math.abs(this.player.x - 4800) < 55 && !this.checkpoint2Reached) {
+      this.checkpoint2Reached = true;
+      this.lastCheckpoint = { x: 4800, y: 550 };
+      this.hp = this.maxHp;
+      this.damageMultiplier = 1.45;
+      this.audioSys.playQuizFeedback(true);
+      this._showFloatingText(4800, 500, 'Checkpoint 2 Tersimpan!', '#D8A444');
       this._syncHUD();
     }
 
@@ -1875,10 +1975,10 @@ export class PlatformerScene extends window.Phaser.Scene {
       this._syncHUD();
     }
 
-    // 7. Gerbang Waktu di Ujung Stage Panjang (x >= 3930)
-    if (!this.gateTriggered && this.player.x >= 3930) {
+    // 7. Gerbang Waktu di Ujung Stage Panjang (x >= 7020)
+    if (!this.gateTriggered && this.player.x >= 7020) {
       if (this.stageConfig.id === 4 && this.bossUnit && this.bossUnit.active) {
-        this.player.x = 3900;
+        this.player.x = 6980;
       } else {
         this.gateTriggered = true;
         this.player.setVelocity(0, 0);
