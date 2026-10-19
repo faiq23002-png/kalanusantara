@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+  command = "echo 'Kala Nusantara: Bhayangkara Majapahit is ready for Netlify static deployment!'"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=3600"

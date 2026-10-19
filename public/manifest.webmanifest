@@ -1,0 +1,10 @@
+{
+  "name": "Kala Nusantara: Bhayangkara Majapahit",
+  "short_name": "Kala Nusantara",
+  "description": "Game Edukasi Action-Platformer Sejarah Majapahit (Kurikulum Merdeka)",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#2A1A12",
+  "theme_color": "#B4492F"
+}

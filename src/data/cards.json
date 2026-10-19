@@ -1,0 +1,182 @@
+[
+  {
+    "stage": 1,
+    "id": "s1c1",
+    "title": "Pendiri & Tahun Berdiri",
+    "text": "**Raden Wijaya** mendirikan kerajaan **Majapahit** pada tahun **1293 M** setelah pasukan Mongol meninggalkan pulau Jawa.",
+    "keyword": "Raden Wijaya • 1293 M",
+    "illustrationImg": "./public/assets/items/art_surya_majapahit.png",
+    "bgPreview": "./public/assets/environment/bg_stage1_trowulan.png"
+  },
+  {
+    "stage": 1,
+    "id": "s1c2",
+    "title": "Asal-Usul Nama Majapahit",
+    "text": "Menurut tradisi sejarah, nama Majapahit berasal dari **pohon maja** di hutan Tarik yang buahnya terasa **pahit**.",
+    "keyword": "Pohon Maja Pahit",
+    "illustrationImg": "./public/assets/characters/arka_hero.png",
+    "bgPreview": "./public/assets/environment/bg_stage1_trowulan.png"
+  },
+  {
+    "stage": 1,
+    "id": "s1c3",
+    "title": "Ibu Kota di Trowulan",
+    "text": "**Ibu kota** Kerajaan Majapahit berada di **Trowulan**, wilayah Mojokerto, Jawa Timur.",
+    "keyword": "Trowulan, Mojokerto",
+    "illustrationImg": "./public/assets/environment/bg_stage1_trowulan.png",
+    "bgPreview": "./public/assets/environment/bg_stage1_trowulan.png"
+  },
+  {
+    "stage": 1,
+    "id": "s1c4",
+    "title": "Arsitektur Bata Merah (Kosod)",
+    "text": "Bangunan Majapahit memakai **bata merah** dengan teknik **gosok-rekat (kosod)** tanpa semen modern. Contohnya adalah **Gapura Wringin Lawang**.",
+    "keyword": "Bata Merah • Gapura Wringin Lawang",
+    "illustrationImg": "./public/assets/items/tile_brick.png",
+    "bgPreview": "./public/assets/environment/bg_stage1_trowulan.png"
+  },
+  {
+    "stage": 1,
+    "id": "s1c5",
+    "title": "Koin Gobog & Celengan Terakota",
+    "text": "Masyarakat Majapahit memakai uang logam berlubang bernama **gobog** dan meninggalkan banyak **celengan terakota** (tanah liat bakar) di Trowulan.",
+    "keyword": "Uang Gobog & Celengan Terakota",
+    "illustrationImg": "./public/assets/items/art_gobog.png",
+    "bgPreview": "./public/assets/environment/bg_stage1_trowulan.png"
+  },
+  {
+    "stage": 2,
+    "id": "s2c1",
+    "title": "Kerajaan Agraris Sekaligus Maritim",
+    "text": "Majapahit tumbuh besar sebagai kerajaan **agraris** (pertanian padi) sekaligus kerajaan **maritim** (perdagangan dan armada laut).",
+    "keyword": "Agraris & Maritim",
+    "illustrationImg": "./public/assets/items/art_lumbung_beras_rempah.png",
+    "bgPreview": "./public/assets/environment/bg_stage2_dermaga.png"
+  },
+  {
+    "stage": 2,
+    "id": "s2c2",
+    "title": "Jalur Dagang Sungai Brantas",
+    "text": "**Sungai Brantas** menjadi urat nadi transportasi yang menghubungkan hasil bumi dari pedalaman menuju pelabuhan laut.",
+    "keyword": "Sungai Brantas",
+    "illustrationImg": "./public/assets/environment/bg_stage2_dermaga.png",
+    "bgPreview": "./public/assets/environment/bg_stage2_dermaga.png"
+  },
+  {
+    "stage": 2,
+    "id": "s2c3",
+    "title": "Armada Kapal Jung",
+    "text": "**Kapal jung** adalah kapal kayu berukuran besar yang digunakan armada Majapahit untuk berdagang lintas pulau dan menjaga laut.",
+    "keyword": "Kapal Jung",
+    "illustrationImg": "./public/assets/items/art_miniatur_jung.png",
+    "bgPreview": "./public/assets/environment/bg_stage2_dermaga.png"
+  },
+  {
+    "stage": 2,
+    "id": "s2c4",
+    "title": "Komoditas Beras & Rempah",
+    "text": "Barang dagangan utama yang membuat ekonomi Majapahit makmur adalah **beras** dari Jawa serta **rempah-rempah** Nusantara.",
+    "keyword": "Beras & Rempah-Rempah",
+    "illustrationImg": "./public/assets/items/art_lumbung_beras_rempah.png",
+    "bgPreview": "./public/assets/environment/bg_stage2_dermaga.png"
+  },
+  {
+    "stage": 2,
+    "id": "s2c5",
+    "title": "Hubungan Persahabatan Negeri Tetangga",
+    "text": "Majapahit menjalin hubungan perdagangan dan persahabatan yang baik dengan berbagai negeri tetangga di Asia Tenggara (dikenal sebagai *Mitreka Satata*).",
+    "keyword": "Persahabatan Negeri Tetangga",
+    "illustrationImg": "./public/assets/items/art_panji_armada.png",
+    "bgPreview": "./public/assets/environment/bg_stage2_dermaga.png"
+  },
+  {
+    "stage": 3,
+    "id": "s3c1",
+    "title": "Kemajuan Sastra Masa Hayam Wuruk",
+    "text": "Masa pemerintahan Raja **Hayam Wuruk** merupakan masa keemasan bagi perkembangan karya **sastra** dan budaya di Majapahit.",
+    "keyword": "Kemajuan Sastra",
+    "illustrationImg": "./public/assets/items/art_lontar_negarakertagama.png",
+    "bgPreview": "./public/assets/environment/bg_stage3_candi_tikus.png"
+  },
+  {
+    "stage": 3,
+    "id": "s3c2",
+    "title": "Kitab Negarakertagama (1365 M)",
+    "text": "Kitab **Negarakertagama** ditulis oleh **Mpu Prapanca** pada **1365 M**, berisi catatan pemerintahan, wilayah, dan perjalanan Raja Hayam Wuruk.",
+    "keyword": "Mpu Prapanca • Negarakertagama",
+    "illustrationImg": "./public/assets/items/art_lontar_negarakertagama.png",
+    "bgPreview": "./public/assets/environment/bg_stage3_candi_tikus.png"
+  },
+  {
+    "stage": 3,
+    "id": "s3c3",
+    "title": "Kitab Sutasoma & Mpu Tantular",
+    "text": "Kitab **Sutasoma** ditulis oleh pujangga **Mpu Tantular**. Di dalam kitab inilah tertulis ungkapan terkenal **Bhinneka Tunggal Ika**.",
+    "keyword": "Mpu Tantular • Sutasoma",
+    "illustrationImg": "./public/assets/items/art_lontar_sutasoma.png",
+    "bgPreview": "./public/assets/environment/bg_stage3_candi_tikus.png"
+  },
+  {
+    "stage": 3,
+    "id": "s3c4",
+    "title": "Makna Bhinneka Tunggal Ika",
+    "text": "**Bhinneka Tunggal Ika** berarti **berbeda-beda tetapi tetap satu**. Nilai persatuan dalam keberagaman ini kini menjadi semboyan Indonesia.",
+    "keyword": "Berbeda-beda Tetapi Tetap Satu",
+    "illustrationImg": "./public/assets/items/art_surya_majapahit.png",
+    "bgPreview": "./public/assets/environment/bg_stage3_candi_tikus.png"
+  },
+  {
+    "stage": 3,
+    "id": "s3c5",
+    "title": "Toleransi & Petirtaan Candi Tikus",
+    "text": "Penganut agama **Hindu-Siwa** dan **Buddha** hidup berdampingan dengan rukun. Salah satu peninggalan air suci di Trowulan adalah petirtaan **Candi Tikus**.",
+    "keyword": "Hindu-Siwa & Buddha • Candi Tikus",
+    "illustrationImg": "./public/assets/items/art_pancuran_candi_tikus.png",
+    "bgPreview": "./public/assets/environment/bg_stage3_candi_tikus.png"
+  },
+  {
+    "stage": 4,
+    "id": "s4c1",
+    "title": "Puncak Kejayaan: Raja Hayam Wuruk",
+    "text": "Puncak kejayaan Majapahit berlangsung pada masa pemerintahan Raja **Hayam Wuruk (1350–1389 M)** yang bergelar Sri Rajasanagara.",
+    "keyword": "Hayam Wuruk (1350–1389 M)",
+    "illustrationImg": "./public/assets/items/art_mahkota_emas.png",
+    "bgPreview": "./public/assets/environment/bg_stage4_pelataran_agung.png"
+  },
+  {
+    "stage": 4,
+    "id": "s4c2",
+    "title": "Mahapatih Gajah Mada",
+    "text": "Dalam menjalankan pemerintahan, Raja Hayam Wuruk didampingi oleh panglima dan negarawan ulung, Mahapatih **Gajah Mada**.",
+    "keyword": "Mahapatih Gajah Mada",
+    "illustrationImg": "./public/assets/characters/npc_gajah_mada.png",
+    "bgPreview": "./public/assets/environment/bg_stage4_pelataran_agung.png"
+  },
+  {
+    "stage": 4,
+    "id": "s4c3",
+    "title": "Ikrar Sumpah Palapa (1334 M)",
+    "text": "Saat diangkat menjadi Patih Amangkubhumi pada **1334 M**, Gajah Mada mengucapkan **Sumpah Palapa**: tidak menikmati *palapa* sebelum **menyatukan Nusantara**.",
+    "keyword": "Sumpah Palapa • 1334 M",
+    "illustrationImg": "./public/assets/items/art_segel_palapa.png",
+    "bgPreview": "./public/assets/environment/bg_stage4_pelataran_agung.png"
+  },
+  {
+    "stage": 4,
+    "id": "s4c4",
+    "title": "Wilayah dalam Sumpah Palapa",
+    "text": "Beberapa wilayah Nusantara yang disebut dalam Sumpah Palapa antara lain **Bali, Sunda, Palembang, dan Tumasik** (Singapura kuno).",
+    "keyword": "Bali, Sunda, Palembang, Tumasik",
+    "illustrationImg": "./public/assets/items/art_keris_nagasasra.png",
+    "bgPreview": "./public/assets/environment/bg_stage4_pelataran_agung.png"
+  },
+  {
+    "stage": 4,
+    "id": "s4c5",
+    "title": "Refleksi: Pengaruh & Hubungan Nusantara",
+    "text": "Di banyak wilayah Nusantara, jangkauan Majapahit berupa **pengaruh, pengakuan, dan hubungan dagang**, bukan selalu pemerintahan langsung.",
+    "keyword": "Pengaruh & Hubungan Dagang",
+    "illustrationImg": "./public/assets/enemies/boss_kala.png",
+    "bgPreview": "./public/assets/environment/bg_stage4_pelataran_agung.png"
+  }
+]

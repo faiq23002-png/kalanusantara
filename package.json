@@ -1,0 +1,22 @@
+{
+  "name": "kala-nusantara-bhayangkara-majapahit",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Kala Nusantara: Bhayangkara Majapahit - 2D Action-Platformer Brawler & Educational History Game (Kurikulum Merdeka IPS SMP Fase D & IPAS SD Fase B/C)",
+  "scripts": {
+    "start": "python3 -m http.server 8090",
+    "serve": "npx --yes serve -l 8090 .",
+    "cap:init": "npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/screen-orientation @capacitor/haptics @capacitor/preferences && npx cap add android",
+    "cap:sync": "npx cap sync android",
+    "apk:build": "cd android && ./gradlew assembleDebug"
+  },
+  "keywords": [
+    "majapahit",
+    "kurikulum-merdeka",
+    "phaser3",
+    "capacitor",
+    "educational-game",
+    "android-apk"
+  ],
+  "license": "MIT"
+}

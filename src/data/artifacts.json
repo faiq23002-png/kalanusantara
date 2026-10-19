@@ -1,0 +1,110 @@
+[
+  {
+    "id": "gobog",
+    "stage": 1,
+    "kind": "arkeologi",
+    "kindLabel": "Temuan Arkeologi",
+    "name": "Koin Gobog Majapahit",
+    "iconImg": "./public/assets/items/art_gobog.png",
+    "blurb": "Uang logam berlubang dari masa Majapahit yang dihiasi relief tokoh dan tumbuhan. Banyak ditemukan secara nyata di situs Trowulan."
+  },
+  {
+    "id": "celengan_terakota",
+    "stage": 1,
+    "kind": "arkeologi",
+    "kindLabel": "Temuan Arkeologi",
+    "name": "Celengan Terakota Trowulan",
+    "iconImg": "./public/assets/items/art_celengan_terakota.png",
+    "blurb": "Celengan dari tanah liat bakar (terakota) yang ditemukan di Trowulan, membuktikan kebiasaan menabung masyarakat masa Majapahit."
+  },
+  {
+    "id": "surya_majapahit",
+    "stage": 1,
+    "kind": "arkeologi",
+    "kindLabel": "Temuan Arkeologi",
+    "name": "Relief Surya Majapahit",
+    "iconImg": "./public/assets/items/art_surya_majapahit.png",
+    "blurb": "Ukiran batu lambang matahari bersinar delapan arah mata angin yang ditemukan pada langit-langit candi masa Majapahit."
+  },
+  {
+    "id": "miniatur_jung",
+    "stage": 2,
+    "kind": "rekonstruksi",
+    "kindLabel": "Rekonstruksi",
+    "name": "Model Kapal Jung Majapahit",
+    "iconImg": "./public/assets/items/art_miniatur_jung.png",
+    "blurb": "Rekonstruksi kapal kayu besar berlambung ganda yang digunakan armada niaga dan bahari Majapahit mengarungi lautan."
+  },
+  {
+    "id": "lumbung_beras_rempah",
+    "stage": 2,
+    "kind": "rekonstruksi",
+    "kindLabel": "Rekonstruksi",
+    "name": "Peti Beras & Rempah Nusantara",
+    "iconImg": "./public/assets/items/art_lumbung_beras_rempah.png",
+    "blurb": "Rekonstruksi komoditas utama (beras Jawa dan rempah-rempah) yang diperdagangkan melalui Sungai Brantas hingga pelabuhan laut."
+  },
+  {
+    "id": "panji_armada",
+    "stage": 2,
+    "kind": "legenda",
+    "kindLabel": "Legenda/Ilustrasi",
+    "name": "Panji Merah-Putih (Tradisi)",
+    "iconImg": "./public/assets/items/art_panji_armada.png",
+    "blurb": "Tradisi/ilustrasi populer tentang umbul-umbul merah-putih pada masa Jawa Kuno (bukan artefak kain asli yang bertahan hingga kini)."
+  },
+  {
+    "id": "lontar_sutasoma",
+    "stage": 3,
+    "kind": "arkeologi",
+    "kindLabel": "Temuan Arkeologi",
+    "name": "Naskah Lontar Kitab Sutasoma",
+    "iconImg": "./public/assets/items/art_lontar_sutasoma.png",
+    "blurb": "Warisan naskah karya Mpu Tantular di atas daun lontar yang memuat ungkapan persatuan 'Bhinneka Tunggal Ika'."
+  },
+  {
+    "id": "lontar_negarakertagama",
+    "stage": 3,
+    "kind": "arkeologi",
+    "kindLabel": "Temuan Arkeologi",
+    "name": "Naskah Lontar Negarakertagama",
+    "iconImg": "./public/assets/items/art_lontar_negarakertagama.png",
+    "blurb": "Naskah lontar karya Mpu Prapanca (1365 M) yang mencatat pemerintahan, tata kota, dan wilayah Majapahit."
+  },
+  {
+    "id": "pancuran_candi_tikus",
+    "stage": 3,
+    "kind": "arkeologi",
+    "kindLabel": "Temuan Arkeologi",
+    "name": "Jaladwara Teratai Candi Tikus",
+    "iconImg": "./public/assets/items/art_pancuran_candi_tikus.png",
+    "blurb": "Pancuran air suci berbentuk kuncup bunga teratai yang ditemukan di petirtaan Candi Tikus, Trowulan."
+  },
+  {
+    "id": "keris_nagasasra",
+    "stage": 4,
+    "kind": "legenda",
+    "kindLabel": "Legenda/Ilustrasi",
+    "name": "Keris Pusaka Nagasasra",
+    "iconImg": "./public/assets/items/art_keris_nagasasra.png",
+    "blurb": "Pusaka legenda dalam tradisi kependekaran Nusantara sebagai simbol kewibawaan pelindung kerajaan."
+  },
+  {
+    "id": "mahkota_emas",
+    "stage": 4,
+    "kind": "legenda",
+    "kindLabel": "Legenda/Ilustrasi",
+    "name": "Mahkota Kejayaan Rajasanagara",
+    "iconImg": "./public/assets/items/art_mahkota_emas.png",
+    "blurb": "Ilustrasi simbolis masa puncak keemasan pemerintahan Raja Hayam Wuruk (1350–1389 M)."
+  },
+  {
+    "id": "segel_palapa",
+    "stage": 4,
+    "kind": "legenda",
+    "kindLabel": "Legenda/Ilustrasi",
+    "name": "Medali Ikrar Sumpah Palapa",
+    "iconImg": "./public/assets/items/art_segel_palapa.png",
+    "blurb": "Ilustrasi simbolis yang melambangkan ikrar Sumpah Palapa Mahapatih Gajah Mada (1334 M) untuk menyatukan Nusantara."
+  }
+]

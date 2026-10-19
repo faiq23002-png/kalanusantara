@@ -1,0 +1,29 @@
+[
+  {
+    "id": "keris",
+    "name": "Keris",
+    "icon": "keris",
+    "styleLabel": "Dekat · Cepat",
+    "basicAttack": "Kombo 3 Tebasan",
+    "skill2Name": "Gelombang Keris",
+    "description": "Tebasan jarak dekat beruntun yang gesit, dilengkapi jurus lontaran Gelombang Keris."
+  },
+  {
+    "id": "panah",
+    "name": "Panah (Jemparing)",
+    "icon": "panah",
+    "styleLabel": "Jauh · Bidik ↑/↓",
+    "basicAttack": "Tembak Lurus (Tak Terbatas)",
+    "skill2Name": "Hujan Panah",
+    "description": "Bidik atas/bawah dari jarak aman dengan amunisi tak terbatas serta jurus Hujan Panah."
+  },
+  {
+    "id": "tombak",
+    "name": "Tombak (Waos)",
+    "icon": "tombak",
+    "styleLabel": "Menengah · Tembus 2 Musuh",
+    "basicAttack": "Tusukan Menembus",
+    "skill2Name": "Sapuan Tombak",
+    "description": "Jangkauan menengah yang menembus 2 musuh sekaligus, dilengkapi jurus Sapuan Tombak."
+  }
+]

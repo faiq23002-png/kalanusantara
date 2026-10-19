@@ -1,0 +1,16 @@
+[
+  {
+    "id": "arka",
+    "defaultName": "Arka",
+    "roleTitle": "Bhayangkara Muda",
+    "sprite": "./public/assets/characters/arka_hero.png",
+    "description": "Prajurit muda Bhayangkara dengan ikat kepala udheng merah, kain bata, dan lambang Surya Majapahit."
+  },
+  {
+    "id": "laras",
+    "defaultName": "Laras",
+    "roleTitle": "Srikandi Bhayangkara",
+    "sprite": "./public/assets/characters/laras_hero.png",
+    "description": "Prajurit perempuan Jawa Kuno berkain wiru, ikat dada berlapis zirah ringan, dan selendang tempur."
+  }
+]

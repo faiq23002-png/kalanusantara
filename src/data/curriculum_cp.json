@@ -1,0 +1,35 @@
+{
+  "gameTitle": "Kala Nusantara: Bhayangkara Majapahit",
+  "sectionHeading": "Tujuan Pembelajaran Game Ini (Dipetakan ke CP Kurikulum Merdeka)",
+  "mappingHeader": "Tujuan pembelajaran game ini, dipetakan ke Capaian Pembelajaran (CP)",
+  "curriculumStandard": "Kurikulum Merdeka (SK Kepala BSKAP Kemendikbudristek No. 032/H/KR/2024)",
+  "historiographyNote": "Materi disusun dengan membedakan secara jujur antara temuan arkeologi nyata (koin gobog, celengan terakota, candi bata merah, prasasti), rekonstruksi sejarah (kapal jung), serta tradisi/legenda populer (panji gula kelapa & keris Nagasasra).",
+  "targetLevels": [
+    {
+      "jenjang": "SMP / MTs Kelas VII–VIII (Target Utama)",
+      "mapel": "Ilmu Pengetahuan Sosial (IPS)",
+      "fase": "Fase D",
+      "elemen": "Pemahaman Konsep Sejarah & Konektivitas Antarruang",
+      "mappingSummary": "Tujuan pembelajaran dalam game ini dipetakan pada materi perkembangan masyarakat Indonesia masa Hindu-Buddha serta konektivitas perdagangan antarruang.",
+      "tpSummary": "Memahami perkembangan kerajaan Hindu-Buddha (Majapahit 1293–1389 M), konektivitas jalur perdagangan agraris-maritim Sungai Brantas, karya sastra pujangga (Negarakertagama & Sutasoma), serta nilai persatuan Bhinneka Tunggal Ika.",
+      "indikatorGame": [
+        "Stage 1: Mengidentifikasi berdirinya Kerajaan Majapahit (1293 M) oleh Raden Wijaya serta arsitektur bata merah (teknik kosod) di Trowulan.",
+        "Stage 2: Menjelaskan peran Majapahit sebagai kerajaan agraris dan maritim melalui jalur Sungai Brantas dan armada kapal jung.",
+        "Stage 3: Mengenal karya sastra (Kitab Negarakertagama & Sutasoma) serta nilai toleransi Bhinneka Tunggal Ika.",
+        "Stage 4: Memahami masa puncak kejayaan Hayam Wuruk (1350–1389 M) dan ikrar Sumpah Palapa Gajah Mada (1334 M)."
+      ]
+    },
+    {
+      "jenjang": "SD / MI Kelas IV–VI (Didukung lewat Mode Belajar Anti-Gagal)",
+      "mapel": "Ilmu Pengetahuan Alam dan Sosial (IPAS)",
+      "fase": "Fase B & Fase C",
+      "elemen": "Sejarah & Budaya Daerahku",
+      "mappingSummary": "Tujuan pembelajaran untuk jenjang SD dipetakan pada pengenalan tokoh sejarah, kerajaan bercorak Hindu-Buddha, serta pelestarian peninggalan budaya.",
+      "tpSummary": "Mengenal sejarah kerajaan Hindu-Buddha di Nusantara, tokoh pendiri dan pemimpin Majapahit, serta cara merawat peninggalan sejarah dan artefak budaya.",
+      "indikatorGame": [
+        "Mengenal tokoh sejarah Raja Hayam Wuruk, Mahapatih Gajah Mada, Mpu Prapanca, dan Mpu Tantular.",
+        "Membedakan benda temuan arkeologi nyata (Koin Gobog, Celengan Terakota, Candi Bata Merah) dari rekonstruksi dan pusaka legenda."
+      ]
+    }
+  ]
+}

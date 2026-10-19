@@ -1,0 +1,322 @@
+[
+  {
+    "id": "s1q1",
+    "stage": 1,
+    "cardRef": "s1c1",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Kerajaan Majapahit didirikan pada tahun...",
+    "options": [
+      "1350 M",
+      "1293 M",
+      "1389 M",
+      "1478 M"
+    ],
+    "answer": 1,
+    "explanation": "Raden Wijaya mendirikan Kerajaan Majapahit pada tahun 1293 M."
+  },
+  {
+    "id": "s1q2",
+    "stage": 1,
+    "cardRef": "s1c1",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Tokoh pendiri sekaligus raja pertama Kerajaan Majapahit adalah...",
+    "options": [
+      "Gajah Mada",
+      "Hayam Wuruk",
+      "Raden Wijaya",
+      "Mpu Tantular"
+    ],
+    "answer": 2,
+    "explanation": "Raden Wijaya adalah pendiri Kerajaan Majapahit pada tahun 1293 M."
+  },
+  {
+    "id": "s1q3",
+    "stage": 1,
+    "cardRef": "s1c3",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Ibu kota Kerajaan Majapahit terletak di daerah...",
+    "options": [
+      "Trowulan, Mojokerto",
+      "Muara Takus, Riau",
+      "Kotagede, Yogyakarta",
+      "Banten Lama"
+    ],
+    "answer": 0,
+    "explanation": "Ibu kota Majapahit berada di Trowulan, Mojokerto, Jawa Timur."
+  },
+  {
+    "id": "s1q4",
+    "stage": 1,
+    "cardRef": "s1c4",
+    "type": "mcq",
+    "level": "pahami",
+    "prompt": "Bahan bangunan khas candi dan gapura Majapahit seperti Gapura Wringin Lawang adalah...",
+    "options": [
+      "Batu marmer impor",
+      "Batu kapur putih dari pantai",
+      "Kayu jati berlapis perunggu",
+      "Bata merah dengan teknik gosok-rekat (kosod)"
+    ],
+    "answer": 3,
+    "explanation": "Bangunan Majapahit di Trowulan terkenal memakai bata merah yang direkatkan dengan teknik gosok-rekat (kosod) tanpa semen modern."
+  },
+  {
+    "id": "s1q5",
+    "stage": 1,
+    "cardRef": "s1c5",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Uang logam berlubang yang digunakan pada masa Kerajaan Majapahit disebut...",
+    "options": [
+      "Dirham",
+      "Dinar",
+      "Gobog",
+      "Gulden"
+    ],
+    "answer": 2,
+    "explanation": "Masyarakat Majapahit menggunakan uang logam berlubang bernama Gobog dan menyimpan koin di celengan terakota."
+  },
+  {
+    "id": "s2q1",
+    "stage": 2,
+    "cardRef": "s2c1",
+    "type": "mcq",
+    "level": "pahami",
+    "prompt": "Berdasarkan kegiatan ekonominya di darat dan di laut, Majapahit dikenal sebagai kerajaan...",
+    "options": [
+      "Nomaden Padang Pasir",
+      "Agraris sekaligus Maritim",
+      "Industri Mesin Uap",
+      "Perburuan Hutan Saja"
+    ],
+    "answer": 1,
+    "explanation": "Majapahit adalah kerajaan agraris (penghasil padi/beras) sekaligus kerajaan maritim (perdagangan laut)."
+  },
+  {
+    "id": "s2q2",
+    "stage": 2,
+    "cardRef": "s2c2",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Sungai besar yang menjadi jalur perdagangan utama dari pedalaman Majapahit menuju laut adalah...",
+    "options": [
+      "Sungai Brantas",
+      "Sungai Musi",
+      "Sungai Mahakam",
+      "Sungai Kapuas"
+    ],
+    "answer": 0,
+    "explanation": "Sungai Brantas menjadi jalur transportasi penting yang menghubungkan wilayah pedalaman Jawa Timur ke pelabuhan laut."
+  },
+  {
+    "id": "s2q3",
+    "stage": 2,
+    "cardRef": "s2c3",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Nama kapal kayu berukuran besar yang digunakan armada Majapahit untuk berdagang dan menjaga laut adalah...",
+    "options": [
+      "Kapal Selam",
+      "Kapal Pinisi Modern",
+      "Kapal Jung",
+      "Kapal Galleon Eropa"
+    ],
+    "answer": 2,
+    "explanation": "Kapal jung adalah kapal besar andalan Majapahit untuk pelayaran niaga dan armada laut."
+  },
+  {
+    "id": "s2q4",
+    "stage": 2,
+    "cardRef": "s2c4",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Dua barang dagangan utama yang menjadi andalan perdagangan Kerajaan Majapahit adalah...",
+    "options": [
+      "Karpet dan Gandum",
+      "Sutra dan Teh Es",
+      "Batu Bara dan Minyak",
+      "Beras dan Rempah-rempah"
+    ],
+    "answer": 3,
+    "explanation": "Majapahit mengekspor beras dari pertanian Jawa serta menjadi pusat perdagangan rempah-rempah Nusantara."
+  },
+  {
+    "id": "s2q5",
+    "stage": 2,
+    "cardRef": "s2c1",
+    "type": "mcq",
+    "level": "sebab-akibat",
+    "prompt": "Mengapa Kerajaan Majapahit disebut juga sebagai kerajaan maritim?",
+    "options": [
+      "Karena seluruh penduduknya tinggal di atas perahu dan tidak punya sawah",
+      "Karena memiliki armada kapal jung yang besar dan aktif berdagang melalui jalur laut",
+      "Karena tidak memiliki wilayah daratan sama sekali",
+      "Karena melarang kegiatan pertanian padi di pedalaman"
+    ],
+    "answer": 1,
+    "explanation": "Selain bertani di darat, Majapahit memiliki armada kapal besar dan jaringan pelabuhan yang ramai untuk berdagang lintas laut."
+  },
+  {
+    "id": "s3q1",
+    "stage": 3,
+    "cardRef": "s3c2",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Siapakah pujangga Majapahit yang menulis Kitab Negarakertagama pada tahun 1365 M?",
+    "options": [
+      "Mpu Gandring",
+      "Mpu Tantular",
+      "Mpu Prapanca",
+      "Mpu Sindok"
+    ],
+    "answer": 2,
+    "explanation": "Kitab Negarakertagama ditulis oleh Mpu Prapanca pada tahun 1365 M."
+  },
+  {
+    "id": "s3q2",
+    "stage": 3,
+    "cardRef": "s3c3",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Kalimat 'Bhinneka Tunggal Ika' terdapat di dalam Kitab Sutasoma yang dikarang oleh...",
+    "options": [
+      "Mpu Tantular",
+      "Mpu Prapanca",
+      "Raden Wijaya",
+      "Gajah Mada"
+    ],
+    "answer": 0,
+    "explanation": "Mpu Tantular menulis Kitab Sutasoma yang memuat semboyan Bhinneka Tunggal Ika."
+  },
+  {
+    "id": "s3q3",
+    "stage": 3,
+    "cardRef": "s3c4",
+    "type": "mcq",
+    "level": "pahami",
+    "prompt": "Apa arti dari ungkapan 'Bhinneka Tunggal Ika'?",
+    "options": [
+      "Bersatu di lautan yang luas",
+      "Berbeda-beda tetapi tetap satu",
+      "Kemenangan di medan perang",
+      "Kemakmuran dari hasil bumi"
+    ],
+    "answer": 1,
+    "explanation": "Bhinneka Tunggal Ika berarti 'Berbeda-beda tetapi tetap satu'."
+  },
+  {
+    "id": "s3q4",
+    "stage": 3,
+    "cardRef": "s3c5",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Dua agama utama yang hidup berdampingan secara rukun pada masa Majapahit adalah...",
+    "options": [
+      "Zoroaster dan Tao",
+      "Animisme dan Dinamisme saja",
+      "Konghucu dan Shinto",
+      "Hindu-Siwa dan Buddha"
+    ],
+    "answer": 3,
+    "explanation": "Pada masa Majapahit, penganut agama Hindu-Siwa dan Buddha hidup berdampingan dengan harmonis."
+  },
+  {
+    "id": "s3q5",
+    "stage": 3,
+    "cardRef": "s3c4",
+    "type": "mcq",
+    "level": "sebab-akibat",
+    "prompt": "Mengapa kalimat 'Bhinneka Tunggal Ika' dari masa Majapahit dipilih menjadi semboyan bangsa Indonesia?",
+    "options": [
+      "Karena mewajibkan semua daerah memiliki budaya yang seragam",
+      "Karena kalimat tersebut adalah satu-satunya tulisan yang ditemukan di candi",
+      "Karena maknanya mengajarkan persatuan di tengah keberagaman suku, budaya, dan agama di Indonesia",
+      "Karena hanya berlaku untuk masyarakat di Jawa Timur saja"
+    ],
+    "answer": 2,
+    "explanation": "Makna persatuan dalam perbedaan pada Bhinneka Tunggal Ika sangat sesuai dengan jati diri bangsa Indonesia yang majemuk."
+  },
+  {
+    "id": "s4q1",
+    "stage": 4,
+    "cardRef": "s4c1",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Siapakah raja yang membawa Kerajaan Majapahit mencapai puncak kejayaannya?",
+    "options": [
+      "Raden Wijaya",
+      "Hayam Wuruk (Sri Rajasanagara)",
+      "Jayanegara",
+      "Kertanegara"
+    ],
+    "answer": 1,
+    "explanation": "Puncak kejayaan Majapahit dicapai pada masa pemerintahan Raja Hayam Wuruk (1350–1389 M)."
+  },
+  {
+    "id": "s4q2",
+    "stage": 4,
+    "cardRef": "s4c2",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Mahapatih gagah berani yang mendampingi Raja Hayam Wuruk dalam mempersatukan Nusantara adalah...",
+    "options": [
+      "Gajah Mada",
+      "Mpu Prapanca",
+      "Adityawarman",
+      "Ranggalawe"
+    ],
+    "answer": 0,
+    "explanation": "Mahapatih Gajah Mada mendampingi Raja Hayam Wuruk sebagai Patih Amangkubhumi."
+  },
+  {
+    "id": "s4q3",
+    "stage": 4,
+    "cardRef": "s4c3",
+    "type": "mcq",
+    "level": "pahami",
+    "prompt": "Apa inti dari ikrar Sumpah Palapa yang diucapkan Gajah Mada pada tahun 1334 M?",
+    "options": [
+      "Memindahkan ibu kota kerajaan dari Trowulan ke luar pulau",
+      "Berjanji membangun seribu candi batu hitam dalam satu malam",
+      "Bertekad tidak menikmati palapa sebelum berhasil menyatukan wilayah Nusantara",
+      "Menutup seluruh pelabuhan dagang di Sungai Brantas"
+    ],
+    "answer": 2,
+    "explanation": "Dalam Sumpah Palapa (1334 M), Gajah Mada bersumpah tidak akan menikmati palapa sebelum menyatukan Nusantara."
+  },
+  {
+    "id": "s4q4",
+    "stage": 4,
+    "cardRef": "s4c1",
+    "type": "mcq",
+    "level": "ingat",
+    "prompt": "Rentang masa pemerintahan Raja Hayam Wuruk di Kerajaan Majapahit adalah...",
+    "options": [
+      "1293–1309 M",
+      "1350–1389 M",
+      "1400–1450 M",
+      "1222–1292 M"
+    ],
+    "answer": 1,
+    "explanation": "Raja Hayam Wuruk memerintah Majapahit dari tahun 1350 M hingga 1389 M."
+  },
+  {
+    "id": "s4q5",
+    "stage": 4,
+    "cardRef": "s4c1",
+    "type": "mcq",
+    "level": "sebab-akibat",
+    "prompt": "Mengapa masa pemerintahan Raja Hayam Wuruk dan Gajah Mada disebut sebagai masa puncak kejayaan Majapahit?",
+    "options": [
+      "Karena Majapahit mengisolasi diri dari kerajaan tetangga",
+      "Karena tidak ada kegiatan perdagangan maupun pelayaran sama sekali",
+      "Karena seluruh candi bata merah dihancurkan dan diganti besi",
+      "Karena pengaruh wilayahnya luas di Nusantara, perdagangan makmur, serta sastra dan budaya berkembang pesat"
+    ],
+    "answer": 3,
+    "explanation": "Pada masa Hayam Wuruk dan Gajah Mada, stabilitas politik, kemakmuran ekonomi maritim-agraris, dan karya sastra mencapai puncaknya."
+  }
+]

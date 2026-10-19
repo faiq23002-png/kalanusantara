@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Kala Nusantara: Bhayangkara Majapahit</title>
+  <link rel="manifest" href="./public/manifest.webmanifest" />
+  <link rel="stylesheet" href="./src/ui/bata-ui.css" />
+  <link rel="stylesheet" href="./public/css/style.css" />
+  <!-- Bundle Lokal Phaser 3 (100% Offline APK Ready) -->
+  <script src="./public/vendor/phaser.min.js"></script>
+</head>
+<body>
+  <!-- Fallback Orientasi Portrait (Bagian 6.3) -->
+  <div class="rotate-hint">
+    <div id="rotate-ico-slot"></div>
+    <div>Putar HP-mu ke Samping (Landscape)</div>
+    <small style="font-family:var(--font-body);font-size:0.85rem;opacity:0.8;">Kala Nusantara dirancang khusus untuk layar mendatar.</small>
+  </div>
+
+  <!-- Transisi Khas: Gerbang Bentar Membuka (Bagian 2.2) -->
+  <div id="gapura-transition" class="gapura-transition">
+    <div class="gapura-wing left"></div>
+    <div class="gapura-wing right"></div>
+  </div>
+
+  <!-- ========================================================================
+       1. LAYAR LOADING BERKARAKTER (2 KARAKTER HADAP DEPAN) + "KETUK UNTUK MULAI"
+       ======================================================================== -->
+  <div id="loading-screen" class="full-stage-screen">
+    <div class="hero-showcase-col">
+      <span class="firefly-dot f1"></span>
+      <span class="firefly-dot f2"></span>
+      <span class="firefly-dot f3"></span>
+      <div class="hero-idle-wrap">
+        <img id="loading-hero-img" src="./public/assets/characters/arka_laras_front.png" alt="Arka &amp; Laras Bhayangkara" class="hero-idle-sprite duo-front-sprite" />
+        <div class="hero-ground-shadow duo-shadow"></div>
+      </div>
+    </div>
+
+    <div class="loading-right-col">
+      <div>
+        <h1 class="logo">Kala Nusantara</h1>
+        <div class="logo-sub">Bhayangkara Majapahit</div>
+      </div>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:0.82rem;margin-bottom:4px;">
+          <span id="loading-status-text">Memuat Pustaka &amp; Aset Trowulan...</span>
+          <span id="loading-pct-text">0%</span>
+        </div>
+        <div class="bar gold" style="height:16px;">
+          <i id="loading-bar-fill" style="width:0%;transition:width 0.2s ease;"></i>
+        </div>
+      </div>
+
+      <div class="card-lontar loading-fact-box">
+        <i class="hole l"></i><i class="hole r"></i>
+        <div style="font:800 0.75rem var(--font-display);color:#8a2f18;text-transform:uppercase;margin-bottom:2px;">
+          Tahukah Kamu?
+        </div>
+        <p id="loading-did-you-know">
+          Raden Wijaya mendirikan Kerajaan Majapahit pada tahun 1293 M di kawasan hutan Tarik, Trowulan.
+        </p>
+      </div>
+
+      <div style="display:flex;justify-content:flex-start;margin-top:2px;">
+        <button type="button" id="btn-tap-to-start" class="btn btn--lg btn--primary tap-start-pulse hidden">
+          Ketuk untuk Mulai
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       2. LAYAR VIDEO / SEKUENS INTRO NETRAL (Hanya Sekali — Bagian 2.3)
+       ======================================================================== -->
+  <div id="intro-screen" class="hidden">
+    <div class="intro-stage-viewport">
+      <video id="intro-video-el" playsinline style="width:100%;height:100%;object-fit:cover;" class="hidden"></video>
+
+      <!-- Storyboard Netral (Tanpa Wajah Karakter Spesifik) -->
+      <div id="intro-storyboard-box" class="intro-panel-card">
+        <div id="intro-orb-icon" class="intro-medallion-orb"></div>
+        <div id="intro-step-badge" style="font:800 0.75rem var(--font-display);color:var(--emas-light);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;">
+          Museum Trowulan · Masa Kini
+        </div>
+        <h3 id="intro-step-title" style="font:800 1.25rem var(--font-display);color:var(--lontar);margin-bottom:6px;">
+          Cahaya Medali Surya Majapahit
+        </h3>
+        <p id="intro-step-desc" style="font-size:0.92rem;line-height:1.4;color:#f3dcc2;">
+          Saat jemarimu menyentuh ukiran Medali Surya Majapahit di dalam etalase kaca, cahaya keemasan berpendar hebat dan menarik kesadaranmu menembus lorong waktu...
+        </p>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+      <button type="button" id="btn-intro-next-slide" class="btn">Lanjut Cerita ▸</button>
+      <button type="button" id="btn-skip-intro" class="btn btn--stone hidden">Lewati Intro ▸▸</button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       3. LAYAR SETUP PROFIL: NAMA -> KARAKTER -> SENJATA (Bagian 2.4)
+       ======================================================================== -->
+  <div id="setup-screen" class="hidden">
+    <div class="setup-top-bar">
+      <div>
+        <h2 style="font:800 1.2rem var(--font-display);color:var(--emas-light);letter-spacing:0.06em;">
+          PERSIAPAN PENDEKAR BHAYANGKARA
+        </h2>
+      </div>
+      <div class="setup-name-box">
+        <label for="input-profile-name">Nama:</label>
+        <input type="text" id="input-profile-name" class="setup-name-input" maxlength="16" placeholder="Arka / Laras" />
+      </div>
+      <button type="button" id="btn-save-profile" class="btn btn--primary">Simpan &amp; Masuk</button>
+    </div>
+
+    <div class="setup-main-grid">
+      <div class="setup-panel">
+        <h3>1. Pilih Karakter Pendekar</h3>
+        <div id="setup-characters-grid" class="char-choice-grid"></div>
+      </div>
+
+      <div class="setup-panel">
+        <h3>2. Pilih Senjata Utama</h3>
+        <div id="setup-weapons-list" class="weapon-choice-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       4. BERANDA BARU: KARAKTER KIRI + 2 KARTU (BALAI BELAJAR & PETUALANGAN)
+       ======================================================================== -->
+  <div id="menu-screen" class="hidden">
+    <!-- Kiri Atas: Judul & Chip Gobog/Artefak -->
+    <div class="beranda-top-left">
+      <h1 class="logo">Kala Nusantara</h1>
+      <div class="logo-sub">Bhayangkara Majapahit</div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <span id="menu-gobog-stat" class="chip"></span>
+        <span id="menu-art-stat" class="chip"></span>
+      </div>
+    </div>
+
+    <!-- Kanan Atas: 5 Tombol Ikon Andesit (Museum, Toko, Rapor, Info Guru, Setelan) -->
+    <nav class="beranda-top-right">
+      <button type="button" id="btn-open-museum" class="btn btn--stone btn--icon" title="Museum"></button>
+      <button type="button" id="btn-open-shop" class="btn btn--stone btn--icon" title="Toko"></button>
+      <button type="button" id="btn-open-rapor" class="btn btn--stone btn--icon" title="Rapor"></button>
+      <button type="button" id="btn-open-guru" class="btn btn--stone btn--icon" title="Info Guru"></button>
+      <button type="button" id="btn-open-settings" class="btn btn--stone btn--icon" title="Setelan"></button>
+    </nav>
+
+    <!-- Kiri Tengah-Bawah: Karakter Terpilih Idle + Senjata + Kunang-kunang -->
+    <div class="beranda-hero-stage">
+      <span class="firefly-dot f1"></span>
+      <span class="firefly-dot f2"></span>
+      <span class="firefly-dot f3"></span>
+      <div class="hero-idle-wrap">
+        <img id="beranda-hero-img" src="./public/assets/characters/arka_hero.png" alt="Pendekar" class="hero-idle-sprite" />
+        <img id="beranda-held-weapon" src="./public/assets/items/weapon_keris.png" alt="Senjata" class="hero-held-weapon" />
+        <span id="beranda-weapon-chip" class="chip hero-weapon-badge"></span>
+        <div class="hero-ground-shadow"></div>
+      </div>
+    </div>
+
+    <!-- Kiri Bawah: Sapaan Nama Pendekar + Tombol Ubah Profil + Tombol Reset Data -->
+    <div class="beranda-profile-bar">
+      <span class="chip">Pendekar: <b id="display-player-name">Arka</b></span>
+      <button type="button" id="btn-edit-name" class="chip" style="cursor:pointer;color:var(--emas-light);">Ubah</button>
+      <button type="button" id="btn-beranda-reset-data" class="chip" style="cursor:pointer;color:#ffb4a2;border-color:#b4492f;" title="Hapus Data &amp; Mulai dari 0">Reset Data</button>
+    </div>
+
+    <!-- Kanan: 2 Kartu Berbeda Material (Lontar = Materi, Bata = Petualangan) -->
+    <div class="beranda-right-cards">
+      <div class="card-lontar">
+        <i class="hole l"></i><i class="hole r"></i>
+        <h3>Balai Belajar</h3>
+        <p>Baca ringkasan materi tiap stage dulu, biar siap bertarung.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span id="beranda-materi-status" class="kunci">0 / 4 materi selesai</span>
+          <button type="button" id="btn-beranda-open-belajar" class="btn btn--lontar"></button>
+        </div>
+      </div>
+
+      <div class="card-bata">
+        <h3>Petualangan</h3>
+        <p>Lawan Bayangan Lupa di 4 stage Majapahit.</p>
+        <div class="meta">
+          <span id="beranda-last-stage-chip" class="chip"></span>
+          <span id="beranda-last-acc-chip" class="chip"></span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <button type="button" id="btn-beranda-continue" class="btn btn--lg btn--primary"></button>
+          <button type="button" id="btn-beranda-pick-stage" class="btn btn--stone"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       5. PEMILIH STAGE HORIZONTAL (4 Kartu Besar Berilustrasi — Bagian 3)
+       ======================================================================== -->
+  <div id="stage-picker-modal" class="modal-overlay hidden">
+    <div class="stage-picker-wrap">
+      <div class="stage-picker-header">
+        <div>
+          <h2 id="picker-title-head" style="font:800 1.25rem var(--font-display);color:var(--emas-light);">
+            PILIH STAGE PETUALANGAN
+          </h2>
+          <small id="picker-subtitle-text" style="color:#d9c7a3;font-weight:700;">
+            Ketuk salah satu stage untuk memilih perjalananmu.
+          </small>
+        </div>
+        <button type="button" class="btn btn--stone btn--icon" data-close-modal="stage-picker-modal">
+          <span class="x-glyph"></span>
+        </button>
+      </div>
+
+      <div id="stage-picker-cards" class="stage-cards-strip"></div>
+
+      <div id="stage-picker-bottom-bar" class="stage-picker-footer-bar">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-weight:800;font-size:0.82rem;color:var(--emas-light);">Mode:</span>
+          <button type="button" class="chip" data-mode-select="belajar" id="chip-mode-belajar" style="cursor:pointer;">
+            Mode Belajar (Anti-Gagal)
+          </button>
+          <button type="button" class="chip" data-mode-select="tantangan" id="chip-mode-tantangan" style="cursor:pointer;">
+            Mode Tantangan (Timer)
+          </button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button type="button" id="btn-picker-secondary-learn" class="btn btn--lontar"></button>
+          <button type="button" id="btn-picker-primary-action" class="btn btn--primary"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       6. KARTU MATERI LONTAR + TOMBOL SILANG X (Bagian 4.4)
+       ======================================================================== -->
+  <div id="balai-belajar-modal" class="modal-overlay hidden">
+    <div class="balai-lontar-shell">
+      <div id="balai-swipe-area" class="card-lontar">
+        <button type="button" id="btn-close-balai-x" class="btn btn--icon card__close" aria-label="Tutup">
+          <span class="x-glyph"></span>
+        </button>
+        <i class="hole l"></i><i class="hole r"></i>
+
+        <div id="balai-stage-title" style="font:800 0.78rem var(--font-body);letter-spacing:0.1em;text-transform:uppercase;color:#7a4d1e;margin-bottom:4px;">
+          Balai Belajar · Stage 1 · Kartu 1/5
+        </div>
+
+        <div class="balai-split-inner">
+          <div class="balai-illust-box">
+            <img id="balai-bg-img" src="./public/assets/environment/bg_stage1_trowulan.png" alt="" class="balai-illust-bg" />
+            <img id="balai-fg-img" src="./public/assets/items/art_surya_majapahit.png" alt="Ilustrasi Materi" class="balai-illust-fg" />
+          </div>
+          <div class="balai-text-side">
+            <h3 id="card-title-text">Judul Kartu</h3>
+            <p id="card-body-text"></p>
+            <span id="card-keyword-pill" class="kunci"></span>
+          </div>
+        </div>
+
+        <div id="balai-progress-dots" class="dots"></div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          <button type="button" id="btn-card-prev" class="btn btn--stone">◀ Sebelumnya</button>
+          <button type="button" id="btn-card-next" class="btn btn--primary">Berikutnya ▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       7. LAYAR GAMEPLAY LANDSCAPE:
+          KIRI = JALAN KIRI/KANAN | KANAN = LONCAT, NUNDUK, SERANG & SKILL
+       ======================================================================== -->
+  <div id="gameplay-screen" class="hidden">
+    <!-- Kiri Atas: HUD HP + Energi Ultimate + Chip Gobog, Artefak, & Anak Panah -->
+    <div class="gameplay-hud-top-left">
+      <div class="hud">
+        <div style="display:flex;justify-content:space-between;">
+          <span>HP <b id="hud-hp-text">100/100</b></span>
+          <span id="hud-weapon-label" style="color:var(--emas-light);">Keris</span>
+        </div>
+        <div class="bar"><i id="hud-hp-bar" style="width:100%"></i></div>
+        <div class="bar gold" style="height:9px"><i id="hud-energy-bar" style="width:0%"></i></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span id="hud-gobog-counter" class="chip"></span>
+        <span id="hud-art-counter" class="chip"></span>
+        <span id="hud-arrow-counter" class="chip hidden"></span>
+      </div>
+    </div>
+
+    <!-- Kanan Atas: 1 Tombol Jeda -->
+    <div class="gameplay-hud-top-right">
+      <button type="button" id="btn-hud-pause" class="btn btn--stone btn--icon" aria-label="Jeda"></button>
+    </div>
+
+    <!-- Judul Stage (Tampil 2 Detik di Awal Saja — Posisi Tidak Menabrak Balon NPC) -->
+    <div id="stage-intro-splash" class="stage-intro-splash hidden"></div>
+
+    <!-- Banner Soal Boss Permanen Selama Perisai Prasasti Aktif -->
+    <div id="boss-question-banner" class="boss-question-banner hidden"></div>
+
+    <!-- Balon Dialog NPC di Atas Kertas Lontar -->
+    <div id="npc-dialog-balloon" class="npc-dialog-balloon hidden">
+      <img id="npc-balloon-img" src="./public/assets/characters/npc_gajah_mada.png" alt="NPC" class="npc-portrait-img" />
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;justify-content:space-between;font-size:0.74rem;font-weight:800;color:#8a2f18;">
+          <span id="npc-balloon-speaker">Mahapatih Gajah Mada</span>
+          <span>Ketuk untuk lanjut ▸</span>
+        </div>
+        <p id="npc-balloon-text" class="npc-balloon-text"></p>
+      </div>
+    </div>
+
+    <!-- Container Phaser 3 -->
+    <div id="phaser-game-container"></div>
+
+    <!-- Kiri Bawah: Kontrol Jalan Kiri & Kanan -->
+    <div class="gameplay-dpad-zone">
+      <div id="move-lr-touch-area" class="move-lr-pad">
+        <button type="button" id="dpad-left" class="btn btn--stone btn--icon move-lr-btn" aria-label="Jalan Kiri">
+          <i class="arrow l"></i>
+          <span class="move-lr-lbl">KIRI</span>
+        </button>
+        <button type="button" id="dpad-right" class="btn btn--stone btn--icon move-lr-btn" aria-label="Jalan Kanan">
+          <i class="arrow r"></i>
+          <span class="move-lr-lbl">KANAN</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Kanan Bawah: Loncat (▲), Nunduk (▼), Serang Utama, Skill 1, Skill 2, Dash, & Ultimate -->
+    <div class="gameplay-action-cluster">
+      <button type="button" id="touch-ult" class="btn btn--primary btn--icon hidden" style="grid-column:1;grid-row:1;" title="Ultimate Sumpah Palapa [U]">
+        <span class="ico-slot" data-ico="surya"></span>
+        <span class="kb-hint">[U]</span>
+      </button>
+      <button type="button" id="touch-dash" class="btn btn--stone btn--icon" style="grid-column:1;grid-row:2;" title="Dash [Shift]">
+        <span class="ico-slot" data-ico="dash"></span>
+        <span class="kb-hint">[Shift]</span>
+      </button>
+
+      <button type="button" id="touch-skill2" class="btn btn--stone btn--icon" style="grid-column:2;grid-row:1;" title="Jurus Senjata [L]">
+        <span class="ico-slot" data-ico="keris"></span>
+        <span class="kb-hint">[L]</span>
+      </button>
+      <button type="button" id="touch-skill1" class="btn btn--stone btn--icon" style="grid-column:2;grid-row:2;" title="Skill 1 Surya [K]">
+        <span class="ico-slot" data-ico="surya"></span>
+        <span class="kb-hint">[K]</span>
+      </button>
+
+      <button type="button" id="touch-jump" class="btn btn--icon" style="grid-column:3;grid-row:1;" title="Loncat [Spasi / W]">
+        <i class="arrow u"></i>
+        <span class="act-sub-lbl">LONCAT</span>
+        <span class="kb-hint">[Spasi]</span>
+      </button>
+      <button type="button" id="touch-crouch" class="btn btn--stone btn--icon" style="grid-column:3;grid-row:2;" title="Nunduk / Jongkok [S / ↓]">
+        <i class="arrow d"></i>
+        <span class="act-sub-lbl">NUNDUK</span>
+        <span class="kb-hint">[S/↓]</span>
+      </button>
+
+      <button type="button" id="touch-punch" class="btn btn--icon big btn--primary" style="grid-column:4;grid-row:1/3;" title="Serang [J]">
+        <span id="hud-attack-ico" class="ico-slot" data-ico="keris"></span>
+        <span class="kb-hint">[J]</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       8. MODAL CEK CEPAT, GERBANG WAKTU, HASIL STAGE, & EPILOG TAMAT
+       ======================================================================== -->
+  <div id="cek-cepat-modal" class="modal-overlay hidden">
+    <div class="balai-lontar-shell">
+      <div class="card-lontar">
+        <i class="hole l"></i><i class="hole r"></i>
+        <h3 id="qc-header-badge">Cek Cepat Pra-Main</h3>
+        <p id="qc-prompt-text" style="font-weight:800;"></p>
+        <div id="qc-options-list"></div>
+        <div id="qc-card-feedback" class="hidden" style="background:rgba(42,26,18,0.92);color:var(--lontar);padding:8px 12px;border-radius:4px;margin-top:6px;font-size:0.85rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gerbang-waktu-modal" class="modal-overlay hidden">
+    <div class="balai-lontar-shell">
+      <div class="card-lontar">
+        <i class="hole l"></i><i class="hole r"></i>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <h3 id="gate-progress-title">Ujian Gerbang Waktu</h3>
+          <span id="gate-timer-badge" class="kunci"></span>
+        </div>
+        <p id="gate-question-prompt" style="font-weight:800;"></p>
+        <div id="gate-options-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hasil-stage-modal" class="modal-overlay hidden">
+    <div class="balai-lontar-shell">
+      <div class="card-lontar" style="text-align:center;">
+        <i class="hole l"></i><i class="hole r"></i>
+        <h3 id="res-stage-title">Stage Tuntas!</h3>
+        <div id="res-stars-display" style="display:flex;justify-content:center;gap:8px;margin:6px 0;"></div>
+        <div id="res-stats-summary" style="font-weight:800;margin-bottom:8px;"></div>
+        <div id="res-wrong-review" style="text-align:left;margin-bottom:10px;"></div>
+        <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+          <button type="button" id="btn-result-retry" class="btn btn--stone hidden">Ulangi Stage</button>
+          <button type="button" id="btn-result-menu" class="btn btn--primary">Kembali ke Beranda</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="epilog-modal" class="modal-overlay hidden">
+    <div class="balai-lontar-shell">
+      <div class="card-lontar" style="text-align:center;">
+        <i class="hole l"></i><i class="hole r"></i>
+        <h3>Cahaya Wilwatikta Pulih Kembali!</h3>
+        <p style="font-size:0.95rem;line-height:1.45;">
+          Kabut <b>Bayangan Lupa</b> telah sirna! <b>Kala Penjaga Candi Agung</b> kembali bersinar keemasan menjaga pelataran Trowulan, dan seluruh catatan sejarah Majapahit dari tahun <b>1293 M</b> hingga ikrar <b>Sumpah Palapa (1334 M)</b> berhasil kamu selamatkan!
+        </p>
+        <div style="display:flex;justify-content:center;gap:10px;margin-top:10px;">
+          <button type="button" id="btn-epilog-rapor" class="btn btn--lontar">Lihat Lontar Rapor</button>
+          <button type="button" id="btn-epilog-close" class="btn btn--primary">Kembali ke Beranda</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       9. MODAL JEDA, SETELAN (⚙), MUSEUM, TOKO, RAPOR, & INFO GURU
+       ======================================================================== -->
+  <div id="pause-modal" class="modal-overlay hidden">
+    <div class="card-bata secondary-panel-card" style="max-width:440px;">
+      <button type="button" class="btn btn--icon card__close" data-close-modal="pause-modal"><span class="x-glyph"></span></button>
+      <h3>Permainan Dijeda</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+        <button type="button" id="btn-pause-jamu" class="btn btn--stone"></button>
+        <button type="button" id="btn-pause-cards" class="btn btn--lontar"></button>
+        <button type="button" id="btn-pause-audio" class="btn btn--stone"></button>
+        <button type="button" id="btn-pause-exit" class="btn btn--primary"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings-modal" class="modal-overlay hidden">
+    <div class="card-bata secondary-panel-card" style="max-width:520px;">
+      <button type="button" class="btn btn--icon card__close" data-close-modal="settings-modal"><span class="x-glyph"></span></button>
+      <h3 id="settings-title-head">Setelan &amp; Data Permainan</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Suara &amp; Musik Gamelan</span>
+          <button type="button" id="btn-setting-audio" class="btn btn--stone">Aktif</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Efek Visual Ambient (Daun / Burung / Awan)</span>
+          <button type="button" id="btn-setting-fx" class="btn btn--stone">Penuh</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(216,164,68,0.3);padding-top:8px;">
+          <div>
+            <strong style="display:block;color:#ffb4a2;">Hapus / Reset Data Permainan</strong>
+            <small style="color:#d9c7a3;font-size:0.74rem;">Mulai ulang semua progres dari 0 &amp; kembali ke layar pembuka.</small>
+          </div>
+          <button type="button" id="btn-setting-reset-data" class="btn btn--primary" style="min-height:40px;font-size:0.78rem;">
+            Reset dari 0
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="museum-modal" class="modal-overlay hidden">
+    <div class="card-bata secondary-panel-card">
+      <button type="button" class="btn btn--icon card__close" data-close-modal="museum-modal"><span class="x-glyph"></span></button>
+      <h3 id="museum-title-head">Etalase Museum Trowulan</h3>
+      <div class="museum-showcase-layout">
+        <div id="museum-shelves-grid" class="museum-shelves-grid"></div>
+        <div id="museum-detail-pane" class="museum-detail-pane"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="shop-modal" class="modal-overlay hidden">
+    <div class="card-bata secondary-panel-card">
+      <button type="button" class="btn btn--icon card__close" data-close-modal="shop-modal"><span class="x-glyph"></span></button>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-right:34px;">
+        <h3 id="shop-title-head">Toko Pusaka &amp; Busana</h3>
+        <span id="shop-coins-badge" class="chip"></span>
+      </div>
+      <div class="shop-split-layout">
+        <div class="shop-character-stage">
+          <img id="shop-arka-img" src="./public/assets/characters/arka_hero.png" alt="Preview Karakter" class="shop-arka-preview" />
+          <strong id="shop-costume-title" style="color:var(--emas-light);font-size:0.82rem;margin-top:4px;">Zirah Bhayangkara Surya</strong>
+          <small id="shop-costume-note" style="font-size:0.72rem;color:#f3dcc2;margin-top:2px;"></small>
+        </div>
+        <div id="shop-items-body" class="shop-items-col"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="rapor-modal" class="modal-overlay hidden">
+    <div class="balai-lontar-shell">
+      <div class="card-lontar">
+        <button type="button" class="btn btn--icon card__close" data-close-modal="rapor-modal"><span class="x-glyph"></span></button>
+        <i class="hole l"></i><i class="hole r"></i>
+        <h3 id="rapor-title-head">Lontar Rapor Pendekar</h3>
+        <div id="rapor-rings-grid" class="rapor-rings-grid"></div>
+        <div id="rapor-advice-box" style="background:rgba(42,26,18,0.92);color:var(--lontar);padding:8px 12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;"></div>
+        <button type="button" id="btn-download-rapor-png" class="btn btn--primary" style="width:100%;">
+          Unduh Lontar Rapor (.PNG)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="guru-modal" class="modal-overlay hidden">
+    <div class="balai-lontar-shell">
+      <div class="card-lontar" style="max-height:90vh;overflow-y:auto;">
+        <button type="button" class="btn btn--icon card__close" data-close-modal="guru-modal"><span class="x-glyph"></span></button>
+        <i class="hole l"></i><i class="hole r"></i>
+        <h3 id="guru-title-head">Info Guru &amp; Pemetaan Kurikulum</h3>
+        <div id="guru-content-body" style="font-size:0.86rem;line-height:1.4;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

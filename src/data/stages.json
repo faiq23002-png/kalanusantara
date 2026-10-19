@@ -1,0 +1,75 @@
+[
+  {
+    "id": 1,
+    "title": "Stage 1: Gerbang Trowulan",
+    "subtitle": "Berdirinya Kerajaan Majapahit (1293 M)",
+    "environment": "Gapura Wringin Lawang (candi bentar bata merah), pohon beringin, & kolam Segaran",
+    "npcName": "Mahapatih Gajah Mada",
+    "npcDialogIntro": "Selamat datang di Trowulan, Bhayangkara muda Arka! Bayangan Lupa mencoba menghapus ingatan tentang berdirinya Majapahit. Gunakan Tinju Surya-mu dan kumpulkan kembali artefak kita!",
+    "mechanicHint": "Gunakan Tinju Kombo [J], Lompat Ganda [Spasi], dan pukul Tembok Bata Retak dengan Skill 1: Pukulan Bara Surya [K]!",
+    "unlockedSkills": ["combo", "skill1"],
+    "skyColorTop": "#24496e",
+    "skyColorBottom": "#f2a65a",
+    "brickColor": "#b84a39",
+    "prasastiBlocks": [
+      "Raden Wijaya mendirikan Kerajaan Majapahit pada tahun 1293 M di Trowulan!",
+      "Candi Majapahit dibangun dari bata merah dengan teknik gosok-rekat (kosod)!",
+      "Uang logam berlubang masa Majapahit disebut Gobog dan disimpan di celengan terakota!"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Stage 2: Dermaga Brantas",
+    "subtitle": "Kejayaan Agraris & Maritim (Kapal Jung)",
+    "environment": "Dermaga kayu Sungai Brantas & geladak Kapal Jung di atas air bergelombang",
+    "npcName": "Nakhoda Kapal Jung",
+    "npcDialogIntro": "Sungai Brantas menghubungkan sawah pedalaman ke lautan luas! Sekarang kamu bisa memakai Skill 2: Gelombang Keris [L] dan Dash [Shift] untuk melompati anjungan kapal jung!",
+    "mechanicHint": "Platform kayu kapal bergerak mengikuti ombak! Gunakan Gelombang Keris [L] untuk menjatuhkan Bayangan Pemanah!",
+    "unlockedSkills": ["combo", "skill1", "skill2", "dash"],
+    "skyColorTop": "#1b4965",
+    "skyColorBottom": "#62b6cb",
+    "brickColor": "#7f4f24",
+    "prasastiBlocks": [
+      "Majapahit adalah kerajaan agraris (padi) sekaligus maritim (armada laut)!",
+      "Sungai Brantas menjadi jalur utama pengangkutan beras dan rempah ke laut!",
+      "Kapal Jung adalah kapal besar Majapahit untuk berdagang dan menjaga laut!"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Stage 3: Candi Tikus & Sanggar Pujangga",
+    "subtitle": "Kemajuan Sastra & Toleransi Bhinneka Tunggal Ika",
+    "environment": "Petirtaan Candi Tikus, pancuran teratai, & pendopo saat senja keemasan",
+    "npcName": "Mpu Tantular & Mpu Prapanca",
+    "npcDialogIntro": "Di sanggar ini kami menulis Negarakertagama dan Sutasoma. Aktifkan dua Saklar Harmoni (Siwa & Buddha) untuk membuka jembatan menuju Gerbang Waktu!",
+    "mechanicHint": "Aktifkan kedua Saklar Harmoni di tengah stage agar jembatan terbuka, dan jawab kuis pujangga di Pendopo untuk mendapat Buff +40% Damage!",
+    "unlockedSkills": ["combo", "skill1", "skill2", "dash"],
+    "skyColorTop": "#3c1642",
+    "skyColorBottom": "#f77f00",
+    "brickColor": "#9e3b33",
+    "prasastiBlocks": [
+      "Mpu Prapanca menulis Kitab Negarakertagama pada tahun 1365 M!",
+      "Mpu Tantular menulis Kitab Sutasoma yang memuat semboyan Bhinneka Tunggal Ika!",
+      "Agama Hindu-Siwa dan Buddha hidup rukun; Candi Tikus adalah petirtaan suci!"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Stage 4: Pelataran Agung",
+    "subtitle": "Puncak Kejayaan & Ujian Kala Penjaga Candi",
+    "environment": "Pelataran istana malam hari di bawah obor api & gerbang Relief Kala",
+    "npcName": "Raja Hayam Wuruk & Gajah Mada",
+    "npcDialogIntro": "Kala Penjaga Candi Agung sedang terpengaruh kabut Bayangan Lupa! Kalahkan kabutnya dan buktikan ingatanmu tentang Sumpah Palapa (1334 M) dan kejayaan Majapahit!",
+    "mechanicHint": "Ultimate 'Amarah Sumpah Palapa' [U] telah terbuka! Saat HP Boss Kala mencapai 50%, pukul Pilar Prasasti (A/B/C) yang benar untuk memecahkan perisainya!",
+    "unlockedSkills": ["combo", "skill1", "skill2", "dash", "ultimate"],
+    "skyColorTop": "#10002b",
+    "skyColorBottom": "#5a189a",
+    "brickColor": "#7b2cbf",
+    " isBossStage": true,
+    "prasastiBlocks": [
+      "Puncak kejayaan Majapahit dipimpin Raja Hayam Wuruk (1350–1389 M)!",
+      "Gajah Mada diangkat Patih Amangkubhumi tahun 1334 M dan mengikrarkan Sumpah Palapa!",
+      "Sumpah Palapa berisi tekad menyatukan wilayah Nusantara seperti Bali, Sunda, Palembang, dan Tumasik!"
+    ]
+  }
+]

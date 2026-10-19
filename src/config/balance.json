@@ -1,0 +1,119 @@
+{
+  "hero": {
+    "maxHp": 100,
+    "upgradedMaxHp": 140,
+    "moveSpeed": 250,
+    "jumpForce": 480,
+    "doubleJumpForce": 410,
+    "dashSpeed": 560,
+    "dashDurationMs": 220,
+    "dashCooldownMs": 1200,
+    "comboDamage": [15, 20, 35],
+    "airKickDamage": 28,
+    "skill1": {
+      "id": "pukulan_surya",
+      "name": "Pukulan Bara Surya",
+      "damage": 65,
+      "cooldownSec": 4.0,
+      "breaksCrackedWall": true,
+      "unlockedAtStage": 1
+    },
+    "skill2": {
+      "id": "gelombang_keris",
+      "name": "Gelombang Keris Nagasasra",
+      "damage": 55,
+      "cooldownSec": 6.0,
+      "pierceCount": 3,
+      "unlockedAtStage": 2
+    },
+    "ultimate": {
+      "id": "sumpah_palapa",
+      "name": "Amarah Sumpah Palapa",
+      "damage": 180,
+      "maxBossHpRatio": 0.20,
+      "energyRequired": 100,
+      "unlockedAtStage": 4
+    }
+  },
+  "enemies": {
+    "bayangan_petarung": {
+      "name": "Bayangan Petarung",
+      "hp": 42,
+      "damage": 10,
+      "speed": 115
+    },
+    "bayangan_tombak": {
+      "name": "Bayangan Petarung",
+      "hp": 42,
+      "damage": 10,
+      "speed": 115
+    },
+    "bayangan_pemanah": {
+      "name": "Bayangan Pemanah",
+      "hp": 34,
+      "damage": 11,
+      "speed": 90
+    },
+    "bayangan_perisai": {
+      "name": "Bayangan Perisai",
+      "hp": 60,
+      "damage": 14,
+      "speed": 95,
+      "frontImmuneToBasic": true
+    },
+    "boss_kala": {
+      "name": "Kala Penjaga Candi Agung",
+      "hp": 600,
+      "damage": 18,
+      "speed": 145,
+      "shieldTriggerHpRatio": 0.50,
+      "stunDurationSec": 5.0
+    }
+  },
+  "modes": {
+    "belajar": {
+      "label": "Mode Belajar (Anti-Gagal)",
+      "description": "Cocok untuk SD Kelas 5–6 & pemula. Karakter tidak bisa mati (respawn di checkpoint), musuh lebih ringan, auto-combo aktif, dan waktu menjawab soal tidak dibatasi.",
+      "enemyHpMultiplier": 0.7,
+      "enemyDmgMultiplier": 0.5,
+      "cannotDie": true,
+      "quizTimerSec": 0
+    },
+    "tantangan": {
+      "label": "Mode Tantangan (Standar Pendekar)",
+      "description": "Cocok untuk SMP Kelas 7–8. Pertarungan penuh, waktu soal terbatas (25 detik), dan membuka Bintang Bonus.",
+      "enemyHpMultiplier": 1.0,
+      "enemyDmgMultiplier": 1.0,
+      "cannotDie": false,
+      "quizTimerSec": 25
+    }
+  },
+  "shop": {
+    "jamuHealCost": 15,
+    "jamuHealAmount": 50,
+    "maxHpUpgradeCost": 50,
+    "costumes": [
+      {
+        "id": "bhayangkara",
+        "name": "Zirah Bhayangkara Surya",
+        "cost": 0,
+        "tint": "0xffffff",
+        "historicalNote": "Bhayangkara adalah pasukan pengawal elit kerajaan Majapahit yang pernah dipimpin oleh Gajah Mada."
+      },
+      {
+        "id": "prajurit_laut",
+        "name": "Busana Bahari Jung",
+        "cost": 40,
+        "tint": "0x70e2ff",
+        "historicalNote": "Para pelaut dan prajurit maritim Majapahit mengarungi Sungai Brantas hingga lautan Nusantara dengan kapal jung."
+      },
+      {
+        "id": "pujangga_lontar",
+        "name": "Jubah Pujangga Keraton",
+        "cost": 60,
+        "tint": "0xffd166",
+        "historicalNote": "Para pujangga seperti Mpu Prapanca dan Mpu Tantular menulis karya sastra di atas daun lontar."
+      }
+    ]
+  }
+}
