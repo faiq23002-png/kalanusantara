@@ -133,8 +133,12 @@ class KalaNusantaraApp {
 
     const imgUrls = [
       './public/assets/characters/arka_laras_front.png',
-      './public/assets/characters/arka_hero.png',
-      './public/assets/characters/laras_hero.png',
+      './public/assets/characters/arka_keris.png',
+      './public/assets/characters/arka_panah.png',
+      './public/assets/characters/arka_tombak.png',
+      './public/assets/characters/laras_keris.png',
+      './public/assets/characters/laras_panah.png',
+      './public/assets/characters/laras_tombak.png',
       './public/assets/characters/npc_gajah_mada.png',
       './public/assets/items/item_quiver.png',
       './public/assets/environment/bg_stage1_trowulan.png',
@@ -575,10 +579,11 @@ class KalaNusantaraApp {
       this.audio.playQuizFeedback(true);
       document.getElementById('pause-modal')?.classList.add('hidden');
       this._syncPhaserPauseState();
-      const heroSprite =
-        this.storage.state.profile.karakter === 'laras'
-          ? './public/assets/characters/laras_hero.png'
-          : './public/assets/characters/arka_hero.png';
+      const pChar = this.storage.state.profile.karakter === 'laras' ? 'laras' : 'arka';
+      const pWeap = ['keris', 'panah', 'tombak'].includes(this.storage.state.profile.senjata)
+        ? this.storage.state.profile.senjata
+        : 'keris';
+      const heroSprite = `./public/assets/characters/${pChar}_${pWeap}.png`;
       this.showNpcBalloon(
         this.storage.state.profile.nama,
         `Segar kembali! Jamu Tirta memulihkan +${this.balance.shop.jamuHealAmount} HP.`,
@@ -732,23 +737,18 @@ class KalaNusantaraApp {
       nameInput.value = this.draftProfile.nama;
     }
 
-    const weapSpriteMap = {
-      keris: './public/assets/items/weapon_keris.png',
-      panah: './public/assets/items/weapon_panah.png',
-      tombak: './public/assets/items/weapon_tombak.png'
-    };
-    const activeWeapSprite = weapSpriteMap[this.draftProfile.senjata] || weapSpriteMap.keris;
-
     const charGrid = document.getElementById('setup-characters-grid');
     if (charGrid) {
       charGrid.innerHTML = this.characters
         .map((ch) => {
           const isSel = this.draftProfile.karakter === ch.id;
+          const charSpriteWithWeap = (ch.spritesByWeapon && ch.spritesByWeapon[this.draftProfile.senjata])
+            ? ch.spritesByWeapon[this.draftProfile.senjata]
+            : (ch.spritesByWeapon?.keris || ch.sprite);
           return `
             <div class="choice-card ${isSel ? 'is-selected' : ''}" data-pick-char="${ch.id}">
-              <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;">
-                <img src="${ch.sprite}" alt="${ch.defaultName}" />
-                <img src="${activeWeapSprite}" alt="Senjata" style="position:absolute;right:-22px;top:28%;width:52px;height:auto;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.7));pointer-events:none;" />
+              <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;height:98px;">
+                <img src="${charSpriteWithWeap}" alt="${ch.defaultName}" style="max-height:94px;width:auto;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6));" />
               </div>
               <h4>${ch.defaultName}</h4>
               <small>${ch.roleTitle}</small>
@@ -828,22 +828,12 @@ class KalaNusantaraApp {
     const nameEl = document.getElementById('display-player-name');
     if (nameEl) nameEl.textContent = profile.nama || st.playerName || 'Arka';
 
+    const charKey = profile.karakter === 'laras' ? 'laras' : 'arka';
+    const validWeaps = ['keris', 'panah', 'tombak'];
+    const weapKey = validWeaps.includes(profile.senjata) ? profile.senjata : 'keris';
     const heroImg = document.getElementById('beranda-hero-img');
     if (heroImg) {
-      heroImg.src =
-        profile.karakter === 'laras'
-          ? './public/assets/characters/laras_hero.png'
-          : './public/assets/characters/arka_hero.png';
-    }
-
-    const weapSpriteMap = {
-      keris: './public/assets/items/weapon_keris.png',
-      panah: './public/assets/items/weapon_panah.png',
-      tombak: './public/assets/items/weapon_tombak.png'
-    };
-    const heldWeapEl = document.getElementById('beranda-held-weapon');
-    if (heldWeapEl) {
-      heldWeapEl.src = weapSpriteMap[profile.senjata] || weapSpriteMap.keris;
+      heroImg.src = `./public/assets/characters/${charKey}_${weapKey}.png`;
     }
 
     const weapObj = this.weapons.find((w) => w.id === profile.senjata) ||
@@ -1722,12 +1712,11 @@ class KalaNusantaraApp {
 
     const activeCostumeObj =
       this.balance.shop.costumes.find((c) => c.id === shopState.activeCostume) || this.balance.shop.costumes[0];
+    const pChar = profile.karakter === 'laras' ? 'laras' : 'arka';
+    const pWeap = ['keris', 'panah', 'tombak'].includes(profile.senjata) ? profile.senjata : 'keris';
     const arkaImg = document.getElementById('shop-arka-img');
     if (arkaImg) {
-      arkaImg.src =
-        profile.karakter === 'laras'
-          ? './public/assets/characters/laras_hero.png'
-          : './public/assets/characters/arka_hero.png';
+      arkaImg.src = `./public/assets/characters/${pChar}_${pWeap}.png`;
       arkaImg.style.filter = COSTUME_FILTERS[activeCostumeObj.id] || COSTUME_FILTERS.bhayangkara;
     }
     const cTitle = document.getElementById('shop-costume-title');

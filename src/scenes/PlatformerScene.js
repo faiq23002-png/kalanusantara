@@ -86,17 +86,13 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.load.image('bg_stage_3', './public/assets/environment/bg_stage3_candi_tikus.png');
     this.load.image('bg_stage_4', './public/assets/environment/bg_stage4_pelataran_agung.png');
 
-    // 2. Spritesheet 8 Pose Karakter (Idle, Jalan, Jongkok/Persiapan Loncat, Loncat, Mendarat/Serang)
-    this.load.spritesheet('arka_sheet', './public/assets/characters/arka_sheet.png', {
-      frameWidth: 220,
-      frameHeight: 300
-    });
-    this.load.spritesheet('laras_sheet', './public/assets/characters/laras_sheet.png', {
-      frameWidth: 220,
-      frameHeight: 300
-    });
-    this.load.image('arka_hero', './public/assets/characters/arka_hero.png');
-    this.load.image('laras_hero', './public/assets/characters/laras_hero.png');
+    // 2. Karakter Utama dengan Senjata Menyatu di Tangan (Arka & Laras - Keris / Panah / Tombak)
+    this.load.image('arka_keris', './public/assets/characters/arka_keris.png');
+    this.load.image('arka_panah', './public/assets/characters/arka_panah.png');
+    this.load.image('arka_tombak', './public/assets/characters/arka_tombak.png');
+    this.load.image('laras_keris', './public/assets/characters/laras_keris.png');
+    this.load.image('laras_panah', './public/assets/characters/laras_panah.png');
+    this.load.image('laras_tombak', './public/assets/characters/laras_tombak.png');
     this.load.image('npc_gajah_mada', './public/assets/characters/npc_gajah_mada.png');
 
     // 3. Musuh Petarung Tinju & Boss Kala
@@ -159,24 +155,21 @@ export class PlatformerScene extends window.Phaser.Scene {
 
     this._buildStageLevel(worldWidth);
 
-    // 4. Karakter Utama dengan Spritesheet 8 Pose + Kaki Menapak Presisi
-    this.selectedCharacter = this.storage.state.profile?.karakter || 'arka';
-    this.selectedWeapon = this.storage.state.profile?.senjata || 'keris';
-    const sheetKey = this.selectedCharacter === 'laras' ? 'laras_sheet' : 'arka_sheet';
-    this.heroSheetKey = sheetKey;
-    this._registerHeroAnimations(sheetKey);
+    // 4. Karakter Utama dengan Senjata Menyatu di Tangan (Integrated Weapon Sprite)
+    this.selectedCharacter = this.storage.state.profile?.karakter === 'laras' ? 'laras' : 'arka';
+    const validWeapons = ['keris', 'panah', 'tombak'];
+    this.selectedWeapon = validWeapons.includes(this.storage.state.profile?.senjata)
+      ? this.storage.state.profile.senjata
+      : 'keris';
+    this.heroTexKey = `${this.selectedCharacter}_${this.selectedWeapon}`;
 
     // Bayangan elips di tanah tepat di bawah telapak kaki agar tidak pernah terkesan melayang
     this.playerShadow = this.add
       .ellipse(140, 636, 54, 14, 0x120905, 0.52)
       .setDepth(8);
 
-    this.player = this.physics.add.sprite(140, 560, sheetKey, 0);
-    this.player.setDisplaySize(96, 130);
-    // Dalam frame 220x300, telapak kaki berada tepat di y=296.
-    // Set ukuran body 94x256 dengan offset (63, 40) sehingga bagian bawah body = 40 + 256 = 296 (pas di telapak kaki!)
-    this.player.body.setSize(94, 256);
-    this.player.body.setOffset(63, 40);
+    this.player = this.physics.add.sprite(140, 560, this.heroTexKey);
+    this._syncHeroSpriteSize();
     this.player.setCollideWorldBounds(true);
     this.player.setGravityY(1020);
     this.player.setDepth(10);
@@ -185,22 +178,6 @@ export class PlatformerScene extends window.Phaser.Scene {
     const costumeObj = this.balance.shop.costumes.find((c) => c.id === activeCostumeId);
     if (costumeObj && costumeObj.tint && Number(costumeObj.tint) !== 0xffffff) {
       this.player.setTint(Number(costumeObj.tint));
-    }
-
-    // 5. Sprite Senjata yang Dipegang Langsung oleh Karakter (Keris / Busur Panah / Tombak Waos)
-    const weapTexMap = {
-      keris: 'weapon_keris',
-      panah: 'weapon_panah',
-      tombak: 'weapon_tombak'
-    };
-    const weapTex = weapTexMap[this.selectedWeapon] || 'weapon_keris';
-    this.playerWeapon = this.add.image(this.player.x + 26, this.player.y + 4, weapTex).setDepth(12);
-    if (this.selectedWeapon === 'keris') {
-      this.playerWeapon.setDisplaySize(56, 30);
-    } else if (this.selectedWeapon === 'panah') {
-      this.playerWeapon.setDisplaySize(46, 62);
-    } else if (this.selectedWeapon === 'tombak') {
-      this.playerWeapon.setDisplaySize(96, 28);
     }
 
     this.lastCheckpoint = { x: 140, y: 550 };
@@ -257,7 +234,7 @@ export class PlatformerScene extends window.Phaser.Scene {
         this.audioSys.playQuizFeedback(true);
         this.callbacks.onNPCDialog?.({
           speaker: artData.name,
-          portrait: artData.iconImg || './public/assets/characters/arka_hero.png',
+          portrait: artData.iconImg || `./public/assets/characters/${this.heroTexKey}.png`,
           text: `${artData.kindLabel}: ${artData.blurb}`
         });
         this._syncHUD();
@@ -308,48 +285,39 @@ export class PlatformerScene extends window.Phaser.Scene {
     });
 
     this.touchInput = { left: false, right: false, up: false, down: false, axisX: 0 };
-    this.player.play(`${sheetKey}_idle`);
     this._syncHUD();
   }
 
-  _registerHeroAnimations(sheetKey) {
-    if (!this.anims.exists(`${sheetKey}_idle`)) {
-      this.anims.create({
-        key: `${sheetKey}_idle`,
-        frames: this.anims.generateFrameNumbers(sheetKey, { frames: [0, 1] }),
-        frameRate: 3,
-        repeat: -1
-      });
-    }
-    if (!this.anims.exists(`${sheetKey}_walk`)) {
-      this.anims.create({
-        key: `${sheetKey}_walk`,
-        frames: this.anims.generateFrameNumbers(sheetKey, { frames: [2, 3, 4, 3] }),
-        frameRate: 11,
-        repeat: -1
-      });
-    }
-    if (!this.anims.exists(`${sheetKey}_crouch`)) {
-      this.anims.create({
-        key: `${sheetKey}_crouch`,
-        frames: [{ key: sheetKey, frame: 5 }],
-        frameRate: 1
-      });
-    }
-    if (!this.anims.exists(`${sheetKey}_jump_up`)) {
-      this.anims.create({
-        key: `${sheetKey}_jump_up`,
-        frames: [{ key: sheetKey, frame: 6 }],
-        frameRate: 1
-      });
-    }
-    if (!this.anims.exists(`${sheetKey}_fall`)) {
-      this.anims.create({
-        key: `${sheetKey}_fall`,
-        frames: [{ key: sheetKey, frame: 7 }],
-        frameRate: 1
-      });
-    }
+  _syncHeroSpriteSize() {
+    if (!this.player || !this.textures.exists(this.heroTexKey)) return;
+    const tex = this.textures.get(this.heroTexKey);
+    const sourceImg = tex?.getSourceImage();
+    const natW = sourceImg?.naturalWidth || sourceImg?.width || 286;
+    const natH = sourceImg?.naturalHeight || sourceImg?.height || 337;
+    const targetH = 126;
+    const targetW = Math.round(targetH * (natW / natH));
+
+    this.player.setDisplaySize(targetW, targetH);
+    this.baseScaleX = this.player.scaleX;
+    this.baseScaleY = this.player.scaleY;
+    this.heroNatW = natW;
+    this.heroNatH = natH;
+    this.heroTargetW = targetW;
+    this.heroTargetH = targetH;
+
+    this._syncHeroBody(false);
+  }
+
+  _syncHeroBody(isCrouching = false) {
+    if (!this.player?.body) return;
+    const natW = this.heroNatW || 286;
+    const natH = this.heroNatH || 337;
+    const bw = Math.round(natW * 0.44);
+    const bh = Math.round(natH * (isCrouching ? 0.52 : 0.84));
+    const ox = Math.round((natW - bw) * 0.5);
+    const oy = Math.round(natH - bh - 6);
+    this.player.body.setSize(bw, bh);
+    this.player.body.setOffset(ox, oy);
   }
 
   // ==========================================================================
@@ -951,9 +919,11 @@ export class PlatformerScene extends window.Phaser.Scene {
     // Jika anak panah habis, lakukan pukulan busur jarak dekat & beri tahu pemain untuk ambil loot panah!
     if (this.arrows <= 0) {
       this._showFloatingText(this.player.x, this.player.y - 48, 'Panah Habis! Ambil Panah (+5) di Arena!', '#E76F51');
-      this.weaponSwingOffset = { x: this.facing * 18, y: 0, angle: 22 * this.facing };
-      this.time.delayedCall(140, () => {
-        this.weaponSwingOffset = { x: 0, y: 0, angle: 0 };
+      this.tweens.add({
+        targets: this.player,
+        x: this.player.x + this.facing * 8,
+        duration: 70,
+        yoyo: true
       });
       const hitX = this.player.x + this.facing * 54;
       const hitY = this.player.y - (this.isCrouching ? -8 : 6);
@@ -979,10 +949,13 @@ export class PlatformerScene extends window.Phaser.Scene {
     if (aimUp) angleDeg = -28;
     else if (aimDown) angleDeg = 28;
 
-    // Animasi tarik busur pada senjata di tangan
-    this.weaponSwingOffset = { x: -this.facing * 8, y: -2, angle: angleDeg * this.facing };
-    this.time.delayedCall(150, () => {
-      this.weaponSwingOffset = { x: 0, y: 0, angle: 0 };
+    // Hentakan tembakan busur pada tubuh karakter
+    this.tweens.add({
+      targets: this.player,
+      x: this.player.x - this.facing * 7,
+      duration: 65,
+      yoyo: true,
+      ease: 'Quad.easeOut'
     });
 
     const spawnX = this.player.x + this.facing * 42;
@@ -1021,10 +994,13 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.comboResetTimer = now + 950;
     this.audioSys.playPunch(this.comboStep);
 
-    // Animasi Tombak Waos menusuk jauh ke depan
-    this.weaponSwingOffset = { x: this.facing * 36, y: 0, angle: this.comboStep === 3 ? -8 * this.facing : 0 };
-    this.time.delayedCall(170, () => {
-      this.weaponSwingOffset = { x: 0, y: 0, angle: 0 };
+    // Hentakan tusukan tombak waos ke depan
+    this.tweens.add({
+      targets: this.player,
+      x: this.player.x + this.facing * 16,
+      duration: 80,
+      yoyo: true,
+      ease: 'Quad.easeOut'
     });
 
     // Garis kilatan tusukan tombak (jangkauan menengah-jauh 145px, menembus 2 musuh!)
@@ -1080,12 +1056,13 @@ export class PlatformerScene extends window.Phaser.Scene {
     }
     dmg = Math.round(dmg * this.damageMultiplier);
 
-    // Ayunan Keris di tangan karakter
-    const swingAngles = [-38, 42, -15];
-    const swingA = swingAngles[(this.comboStep - 1) % 3] * this.facing;
-    this.weaponSwingOffset = { x: this.facing * 22, y: -4, angle: swingA };
-    this.time.delayedCall(145, () => {
-      this.weaponSwingOffset = { x: 0, y: 0, angle: 0 };
+    // Hentakan tebasan keris maju ke depan
+    this.tweens.add({
+      targets: this.player,
+      x: this.player.x + this.facing * 10,
+      duration: 70,
+      yoyo: true,
+      ease: 'Quad.easeOut'
     });
 
     const hitX = this.player.x + this.facing * 64;
@@ -1302,7 +1279,6 @@ export class PlatformerScene extends window.Phaser.Scene {
     if (onGround) {
       // Fase Persiapan Loncat (jongkok 65ms lalu melesat naik)
       this.jumpPrepUntil = this.time.now + 75;
-      this.player.play(`${this.heroSheetKey}_crouch`, true);
       this._spawnStepDust(this.player.x, this.player.body.bottom, 3);
       this.player.setVelocityY(-this.balance.hero.jumpForce);
       this.jumpCount = 1;
@@ -1358,39 +1334,6 @@ export class PlatformerScene extends window.Phaser.Scene {
         onComplete: () => g.destroy()
       });
     }
-  }
-
-  _updateHeldWeapon(time) {
-    if (!this.playerWeapon || !this.player?.active) return;
-
-    const wantWeap = this.storage.state.profile?.senjata || 'keris';
-    if (wantWeap !== this.selectedWeapon) {
-      this.selectedWeapon = wantWeap;
-      const weapTexMap = {
-        keris: 'weapon_keris',
-        panah: 'weapon_panah',
-        tombak: 'weapon_tombak'
-      };
-      this.playerWeapon.setTexture(weapTexMap[this.selectedWeapon] || 'weapon_keris');
-      if (this.selectedWeapon === 'keris') this.playerWeapon.setDisplaySize(56, 30);
-      else if (this.selectedWeapon === 'panah') this.playerWeapon.setDisplaySize(46, 62);
-      else if (this.selectedWeapon === 'tombak') this.playerWeapon.setDisplaySize(96, 28);
-    }
-
-    const crouchY = this.isCrouching ? 24 : 0;
-    const walkBobY = Math.abs(this.player.body.velocity.x) > 15 && this.player.body.touching.down
-      ? Math.sin(time * 0.018) * 3
-      : 0;
-
-    const handOffsetX = this.selectedWeapon === 'tombak' ? 28 : 26;
-    const handOffsetY = this.selectedWeapon === 'panah' ? -4 : 2;
-
-    this.playerWeapon.setPosition(
-      this.player.x + this.facing * handOffsetX + this.weaponSwingOffset.x,
-      this.player.y + handOffsetY + crouchY + walkBobY + this.weaponSwingOffset.y
-    );
-    this.playerWeapon.setFlipX(this.facing < 0);
-    this.playerWeapon.setAngle(this.weaponSwingOffset.angle);
   }
 
   _damageEnemy(enemy, rawDmg, breaksShield) {
@@ -1636,18 +1579,12 @@ export class PlatformerScene extends window.Phaser.Scene {
     const crouchDown = (this.cursors.down.isDown || this.keys.S.isDown || this.touchInput.down) && onGround;
     this.isCrouching = crouchDown;
 
-    // Saat Nunduk (Crouch), perkecil hitbox & rendahkan postur karakter secara nyata!
+    // Saat Nunduk (Crouch), perkecil hitbox secara nyata!
     if (crouchDown !== this.wasCrouching) {
       this.wasCrouching = crouchDown;
+      this._syncHeroBody(crouchDown);
       if (crouchDown) {
-        this.player.body.setSize(94, 178);
-        this.player.body.setOffset(63, 118);
-        this.player.setDisplaySize(102, 112);
         this._spawnStepDust(this.player.x, this.player.body.bottom, 2);
-      } else {
-        this.player.body.setSize(94, 256);
-        this.player.body.setOffset(63, 40);
-        this.player.setDisplaySize(96, 130);
       }
     }
 
@@ -1674,37 +1611,53 @@ export class PlatformerScene extends window.Phaser.Scene {
       }
     }
 
-    // 3. State Machine Animasi Pose Karakter (Jalan, Nunduk/Jongkok, Persiapan Loncat, Loncat, Melayang, Mendarat)
-    const sheetKey = this.heroSheetKey;
+    // 3. State Machine Animasi Pose Karakter (Jalan Dinamis, Nunduk/Jongkok, Persiapan Loncat, Melayang, Mendarat)
+    const baseSx = Math.abs(this.baseScaleX || this.player.scaleX);
+    const baseSy = Math.abs(this.baseScaleY || this.player.scaleY);
+
     if (time < this.jumpPrepUntil) {
-      this.player.play(`${sheetKey}_crouch`, true);
+      // Persiapan loncat (jongkok sekejap)
+      this.player.setScale(baseSx * 1.14, baseSy * 0.78);
+      this.player.setAngle(this.facing * 2);
     } else if (!onGround) {
       if (this.player.body.velocity.y < -35) {
-        this.player.play(`${sheetKey}_jump_up`, true);
+        // Melenting ke atas (stretch vertikal)
+        this.player.setScale(baseSx * 0.92, baseSy * 1.12);
+        this.player.setAngle(-this.facing * 3);
       } else {
-        this.player.play(`${sheetKey}_fall`, true);
+        // Meluncur turun (condong ke depan arah gerak)
+        this.player.setScale(baseSx * 1.04, baseSy * 0.96);
+        this.player.setAngle(this.facing * 5);
       }
     } else if (time < this.landAnimUntil || crouchDown) {
-      this.player.play(`${sheetKey}_crouch`, true);
-    } else if (time < this.attackAnimUntil) {
-      this.player.play(`${sheetKey}_fall`, true);
+      // Nunduk / Mendarat (jongkok rendah & hitbox mengecil)
+      this.player.setScale(baseSx * 1.12, baseSy * 0.76);
+      this.player.setAngle(0);
     } else if (Math.abs(this.player.body.velocity.x) > 15) {
-      this.player.play(`${sheetKey}_walk`, true);
+      // Langkah kaki berirama (bobbing langkah + kemiringan gerak)
+      const stepCycle = time * 0.016;
+      const bobScaleY = 1.0 + Math.sin(stepCycle) * 0.038;
+      const walkTilt = this.facing * Math.sin(stepCycle) * 3.6;
+      this.player.setScale(baseSx * 0.98, baseSy * bobScaleY);
+      this.player.setAngle(walkTilt);
+
       if (time > this.stepDustTimer) {
         this.stepDustTimer = time + 240;
         this._spawnStepDust(this.player.x - this.facing * 10, this.player.body.bottom, 1);
       }
     } else {
-      this.player.play(`${sheetKey}_idle`, true);
+      // Idle bernapas halus (subtle breathing cycle)
+      const breath = Math.sin(time * 0.0035) * 0.022;
+      this.player.setScale(baseSx * (1.0 - breath * 0.35), baseSy * (1.0 + breath));
+      this.player.setAngle(0);
     }
 
-    // Update Bayangan Tanah & Senjata di Tangan Karakter
+    // Update Bayangan Tanah di Bawah Kaki Karakter
     if (this.playerShadow) {
       this.playerShadow.setPosition(this.player.x, this.player.body.bottom - 2);
       this.playerShadow.setAlpha(onGround ? 0.52 : 0.24);
-      this.playerShadow.setScale(onGround ? 1.0 : 0.72);
+      this.playerShadow.setScale(onGround ? (crouchDown ? 1.18 : 1.0) : 0.72);
     }
-    this._updateHeldWeapon(time);
 
     // 4. Input Aksi
     if (
