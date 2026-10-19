@@ -95,6 +95,16 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.load.image('laras_tombak', './public/assets/characters/laras_tombak.png');
     this.load.image('npc_gajah_mada', './public/assets/characters/npc_gajah_mada.png');
 
+    // Action Spritesheets (5 poses: 0: Idle, 1: Run 1, 2: Run 2, 3: Jump, 4: Crouch)
+    ['arka', 'laras'].forEach((c) => {
+      ['keris', 'panah', 'tombak'].forEach((w) => {
+        this.load.spritesheet(`sheet_${c}_${w}`, `./public/assets/characters/sheet_${c}_${w}.png`, {
+          frameWidth: 220,
+          frameHeight: 300
+        });
+      });
+    });
+
     // 3. Musuh Petarung Tinju & Boss Kala
     this.load.image('bayangan_petarung', './public/assets/enemies/bayangan_petarung.png');
     this.load.image('bayangan_tombak', './public/assets/enemies/bayangan_tombak.png');
@@ -155,13 +165,53 @@ export class PlatformerScene extends window.Phaser.Scene {
 
     this._buildStageLevel(worldWidth);
 
-    // 4. Karakter Utama dengan Senjata Menyatu di Tangan (Integrated Weapon Sprite)
+    // 4. Karakter Utama dengan Senjata Menyatu di Tangan (Integrated Weapon Spritesheet)
     this.selectedCharacter = this.storage.state.profile?.karakter === 'laras' ? 'laras' : 'arka';
     const validWeapons = ['keris', 'panah', 'tombak'];
     this.selectedWeapon = validWeapons.includes(this.storage.state.profile?.senjata)
       ? this.storage.state.profile.senjata
       : 'keris';
     this.heroTexKey = `${this.selectedCharacter}_${this.selectedWeapon}`;
+    this.heroSheetKey = `sheet_${this.heroTexKey}`;
+
+    // Daftarkan Animasi Karakter Multi-Frame Nyata untuk Semua Kombinasi Karakter & Senjata
+    ['arka', 'laras'].forEach((c) => {
+      ['keris', 'panah', 'tombak'].forEach((w) => {
+        const sKey = `sheet_${c}_${w}`;
+        if (!this.anims.exists(`${sKey}_idle`)) {
+          this.anims.create({
+            key: `${sKey}_idle`,
+            frames: this.anims.generateFrameNumbers(sKey, { frames: [0] }),
+            frameRate: 1,
+            repeat: -1
+          });
+        }
+        if (!this.anims.exists(`${sKey}_walk`)) {
+          this.anims.create({
+            key: `${sKey}_walk`,
+            frames: this.anims.generateFrameNumbers(sKey, { frames: [1, 2] }),
+            frameRate: 7,
+            repeat: -1
+          });
+        }
+        if (!this.anims.exists(`${sKey}_jump`)) {
+          this.anims.create({
+            key: `${sKey}_jump`,
+            frames: this.anims.generateFrameNumbers(sKey, { frames: [3] }),
+            frameRate: 1,
+            repeat: -1
+          });
+        }
+        if (!this.anims.exists(`${sKey}_crouch`)) {
+          this.anims.create({
+            key: `${sKey}_crouch`,
+            frames: this.anims.generateFrameNumbers(sKey, { frames: [4] }),
+            frameRate: 1,
+            repeat: -1
+          });
+        }
+      });
+    });
 
     // Bayangan elips di tanah tepat di bawah telapak kaki
     this.playerShadow = this.add
@@ -178,21 +228,16 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.player.setGravityY(1020);
     this.player.setDepth(10);
 
-    // 2. Sprite Visual Karakter (Rendering independen berporos telapak kaki origin 0.5, 1.0)
-    this.heroVisual = this.add.image(140, 560, this.heroTexKey).setDepth(10);
-    this.heroVisual.setOrigin(0.5, 1.0);
-    this.heroAttackOffsetX = 0;
-
-    const tex = this.textures.get(this.heroTexKey);
-    const sourceImg = tex?.getSourceImage();
-    const natW = sourceImg?.naturalWidth || sourceImg?.width || 286;
-    const natH = sourceImg?.naturalHeight || sourceImg?.height || 337;
+    // 2. Sprite Visual Karakter Beranimasi Nyata (Origin 0.5, 1.0 di telapak kaki)
     const targetH = 126;
-    const targetW = Math.round(targetH * (natW / natH));
-
+    const targetW = Math.round(targetH * (220 / 300)); // 92px
+    this.heroVisual = this.add.sprite(140, 560, this.heroSheetKey, 0).setDepth(10);
+    this.heroVisual.setOrigin(0.5, 1.0);
     this.heroVisual.setDisplaySize(targetW, targetH);
     this.baseVisualScaleX = this.heroVisual.scaleX;
     this.baseVisualScaleY = this.heroVisual.scaleY;
+    this.heroAttackOffsetX = 0;
+    this.currentHeroAnim = '';
 
     const activeCostumeId = this.storage.state.shop.activeCostume || 'bhayangkara';
     const costumeObj = this.balance.shop.costumes.find((c) => c.id === activeCostumeId);
@@ -1624,55 +1669,42 @@ export class PlatformerScene extends window.Phaser.Scene {
       }
     }
 
-    // 3. State Machine Animasi Pose Karakter (Visual Bebas Glitch, Berporos di Telapak Kaki)
+    // 3. State Machine Animasi Pose Karakter Nyata (Multi-Frame Cel-Shaded Action Art)
     const footX = this.player.x + (this.heroAttackOffsetX || 0);
     const footY = this.player.body.bottom;
     const baseSx = this.baseVisualScaleX;
     const baseSy = this.baseVisualScaleY;
 
+    this.heroVisual.setPosition(footX, footY);
     this.heroVisual.setFlipX(this.facing < 0);
+    this.heroVisual.setScale(baseSx, baseSy);
+    this.heroVisual.setAngle(0);
 
+    let desiredAnim = `${this.heroSheetKey}_idle`;
     if (time < this.jumpPrepUntil) {
-      // Persiapan loncat (jongkok sekejap)
-      this.heroVisual.setPosition(footX, footY);
-      this.heroVisual.setScale(baseSx * 1.08, baseSy * 0.82);
-      this.heroVisual.setAngle(this.facing * 2);
+      // Persiapan loncat -> pose crouch sejenak
+      desiredAnim = `${this.heroSheetKey}_crouch`;
     } else if (!onGround) {
-      this.heroVisual.setPosition(footX, footY);
-      if (this.player.body.velocity.y < -35) {
-        // Melenting ke atas (stretch vertikal)
-        this.heroVisual.setScale(baseSx * 0.94, baseSy * 1.08);
-        this.heroVisual.setAngle(-this.facing * 3);
-      } else {
-        // Meluncur turun (condong ke depan arah gerak)
-        this.heroVisual.setScale(baseSx * 1.02, baseSy * 0.98);
-        this.heroVisual.setAngle(this.facing * 4);
-      }
+      // Sedang di udara / loncat -> pose jump leaping
+      desiredAnim = `${this.heroSheetKey}_jump`;
     } else if (time < this.landAnimUntil || crouchDown) {
-      // Nunduk / Mendarat (jongkok rendah & telapak kaki tetap menapak tanah)
-      this.heroVisual.setPosition(footX, footY);
-      this.heroVisual.setScale(baseSx * 1.1, baseSy * (crouchDown ? 0.72 : 0.88));
-      this.heroVisual.setAngle(0);
+      // Mendarat atau menunduk / jongkok -> pose crouch ducking
+      desiredAnim = `${this.heroSheetKey}_crouch`;
     } else if (Math.abs(this.player.body.velocity.x) > 15) {
-      // Berjalan dinamis: langkah kaki mengangkat berirama & badan condong maju
-      const stepCycle = time * 0.016;
-      const stepBobY = Math.abs(Math.sin(stepCycle)) * 2.8;
-      const walkTilt = this.facing * Math.sin(stepCycle) * 3.2;
-
-      this.heroVisual.setPosition(footX, footY - stepBobY);
-      this.heroVisual.setScale(baseSx, baseSy);
-      this.heroVisual.setAngle(walkTilt);
-
+      // Berjalan nyata -> animasi walk multi-frame (frame 1 & 2 bergantian)
+      desiredAnim = `${this.heroSheetKey}_walk`;
       if (time > this.stepDustTimer) {
-        this.stepDustTimer = time + 240;
+        this.stepDustTimer = time + 220;
         this._spawnStepDust(footX - this.facing * 10, footY, 1);
       }
     } else {
-      // Diam / Stay di tempat: bernapas halus tanpa pergeseran tanah
-      const breath = Math.sin(time * 0.0035) * 0.018;
-      this.heroVisual.setPosition(footX, footY);
-      this.heroVisual.setScale(baseSx, baseSy * (1.0 + breath));
-      this.heroVisual.setAngle(0);
+      // Berdiri diam -> pose idle
+      desiredAnim = `${this.heroSheetKey}_idle`;
+    }
+
+    if (this.currentHeroAnim !== desiredAnim) {
+      this.currentHeroAnim = desiredAnim;
+      this.heroVisual.play(desiredAnim, true);
     }
 
     // Update Bayangan Tanah di Bawah Kaki Karakter

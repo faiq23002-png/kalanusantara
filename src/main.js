@@ -1945,6 +1945,34 @@ class KalaNusantaraApp {
           scene.performBasicPunch();
         }
       }, 80);
+    } else if (v3View === 'gameplay_walk') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+          document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          scene.player.setPosition(260, 560);
+          scene.touchInput.right = true;
+        }
+      }, 80);
+    } else if (v3View === 'gameplay_jump') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+          document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          scene.player.setPosition(320, 560);
+          scene.performJump();
+        }
+      }, 80);
     } else if (v3View === 'gameplay_crouch') {
       this.storage.state.profile.karakter = 'arka';
       this.storage.state.profile.senjata = 'keris';
@@ -1958,6 +1986,20 @@ class KalaNusantaraApp {
           scene.player.setPosition(360, 560);
           scene.touchInput.down = true;
           document.getElementById('touch-crouch')?.classList.add('is-pressed');
+        }
+      }, 80);
+    } else if (v3View === 'gameplay_laras_panah') {
+      this.storage.state.profile.karakter = 'laras';
+      this.storage.state.profile.senjata = 'panah';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+          document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          scene.player.setPosition(280, 560);
+          scene.touchInput.right = true;
         }
       }, 80);
     } else if (v3View === 'stage2') {
