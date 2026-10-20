@@ -259,6 +259,7 @@ export class PlatformerScene extends window.Phaser.Scene {
       this.heroVisual.setTint(Number(costumeObj.tint));
     }
 
+    this.isRespawning = false;
     this.lastCheckpoint = { x: 140, y: 550 };
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
 
@@ -587,18 +588,38 @@ export class PlatformerScene extends window.Phaser.Scene {
     const mainTileKey = this.stageConfig.id === 2 ? 'tile_wood' : 'tile_brick';
 
     for (let x = 32; x < worldWidth; x += 64) {
-      // Lubang jurang di 3 titik strategis (stage 1, 2, 3)
-      if (
-        ((x >= 1180 && x <= 1360) ||
-         (x >= 3480 && x <= 3660) ||
-         (x >= 5860 && x <= 6040)) &&
-        this.stageConfig.id !== 4
-      ) {
+      // 4 Jurang Terjal Terbuka (Pemain WAJIB parkour lewat lantai atas, jatuh ke jurang = gugur!)
+      const inChasm1 = (x >= 1060 && x <= 1440); // Jurang Gapura ke Benteng (~380px)
+      const inChasm2 = (x >= 2260 && x <= 2560); // Jurang Benteng ke Taman Sari (~300px)
+      const inChasm3 = (x >= 4520 && x <= 4920); // Jurang Petirtaan ke Bale Agung (~400px)
+      const inChasm4 = (x >= 5840 && x <= 6060); // Jurang Bale Agung ke Pelataran Arena (~220px)
+
+      if (inChasm1 || inChasm2 || inChasm3 || inChasm4) {
         continue;
       }
       const tile = this.platforms.create(x, groundY, mainTileKey);
       tile.setDisplaySize(64, 64).refreshBody();
     }
+
+    // Papan Peringatan Jurang Terjal & Rute Parkour Atas
+    const chasmSigns = [
+      { x: 1010, y: 560, text: '⚠️ Jurang Terjal!\nLewat Jalur Atas (Parkour)' },
+      { x: 2210, y: 560, text: '⚠️ Jurang Terjal!\nLewat Jalur Atas (Parkour)' },
+      { x: 4470, y: 560, text: '⚠️ Jurang Terjal!\nLewat Jalur Atas (Parkour)' },
+      { x: 5790, y: 560, text: '⚠️ Jurang Terjal!\nLewat Jalur Atas (Parkour)' }
+    ];
+    chasmSigns.forEach((cs) => {
+      this.add.text(cs.x, cs.y, cs.text, {
+        fontFamily: 'NusantaraBody, sans-serif',
+        fontSize: '11px',
+        color: '#E76F51',
+        stroke: '#2A1A12',
+        strokeThickness: 3,
+        align: 'center',
+        backgroundColor: '#1a0904ee',
+        padding: { x: 6, y: 4 }
+      }).setOrigin(0.5).setDepth(12);
+    });
 
     // Platform Bertingkat 3 - 4 Lantai Menjulang ke Atas (Lantai 1: y=545, Lantai 2: y=425, Lantai 3: y=305, Lantai 4: y=185)
     const platformLayouts = [
@@ -609,6 +630,9 @@ export class PlatformerScene extends window.Phaser.Scene {
       { x: 800, y: 185, count: 4 }, // Lantai 4 (Puncak Menara 1)
       { x: 980, y: 305, count: 3 }, // Jembatan penghubung atas
       { x: 1040, y: 425, count: 3 },
+      // Stepping Platforms Parkour Melintasi Jurang 1 (x = 1060 .. 1440)
+      { x: 1180, y: 320, count: 2 },
+      { x: 1320, y: 430, count: 2 },
 
       // === SEKSI 2: Benteng Pertahanan Kosod & Terowongan (x = 1450 .. 2350) ===
       { x: 1460, y: 545, count: 5 }, // Lantai 1
@@ -617,6 +641,9 @@ export class PlatformerScene extends window.Phaser.Scene {
       { x: 1900, y: 185, count: 4 }, // Lantai 4 (Puncak Benteng 2)
       { x: 2060, y: 285, count: 3 }, // Skyway
       { x: 2200, y: 410, count: 4 }, // Tangga turun
+      // Stepping Platforms Parkour Melintasi Jurang 2 (x = 2260 .. 2560)
+      { x: 2340, y: 330, count: 2 },
+      { x: 2460, y: 440, count: 2 },
 
       // === SEKSI 3: Taman Sari & Menara Pengintai Wilwatikta (x = 2550 .. 3450) ===
       { x: 2580, y: 545, count: 4 }, // Lantai 1
@@ -633,6 +660,9 @@ export class PlatformerScene extends window.Phaser.Scene {
       { x: 4140, y: 185, count: 4 }, // Lantai 4 (Puncak Petirtaan 4)
       { x: 4320, y: 290, count: 3 },
       { x: 4460, y: 415, count: 4 },
+      // Stepping Platforms Parkour Melintasi Jurang 3 (x = 4520 .. 4920)
+      { x: 4600, y: 310, count: 2 },
+      { x: 4760, y: 420, count: 2 },
 
       // === SEKSI 5: Bale Agung & Kompleks Keraton Majapahit (x = 4900 .. 5850) ===
       { x: 4940, y: 545, count: 4 }, // Lantai 1
@@ -641,6 +671,8 @@ export class PlatformerScene extends window.Phaser.Scene {
       { x: 5380, y: 185, count: 4 }, // Lantai 4 (Puncak Keraton 5)
       { x: 5560, y: 285, count: 3 },
       { x: 5700, y: 410, count: 4 },
+      // Stepping Platforms Parkour Melintasi Jurang 4 (x = 5840 .. 6060)
+      { x: 5880, y: 330, count: 2 },
 
       // === SEKSI 6: Pelataran Agung & Arena Penjaga Kala (x = 6050 .. 6800) ===
       { x: 6080, y: 545, count: 5 }, // Lantai 1
@@ -658,8 +690,8 @@ export class PlatformerScene extends window.Phaser.Scene {
 
     // Mekanik Khas Stage
     if (this.stageConfig.id === 1) {
-      this.brickTrigger = this.add.rectangle(1080, 608, 44, 58, 0xd8a444).setStrokeStyle(2, 0xf2e3c2);
-      this.add.text(1015, 552, 'Tuas Susun Bata', {
+      this.brickTrigger = this.add.rectangle(980, 608, 44, 58, 0xd8a444).setStrokeStyle(2, 0xf2e3c2);
+      this.add.text(915, 552, 'Tuas Susun Bata', {
         fontFamily: 'NusantaraBody, sans-serif',
         fontSize: '12px',
         color: '#F2E3C2',
@@ -749,19 +781,12 @@ export class PlatformerScene extends window.Phaser.Scene {
       c.setDisplaySize(32, 32);
     }
 
-    // Looting Anak Panah: HANYA MUNCUL JIKA PEMAIN MEMILIH SENJATA PANAH!
+    // Looting Anak Panah: Terbatas di 3 Titik Strategis (Hanya jika memakai senjata busur panah!)
     if (this.selectedWeapon === 'panah') {
       const quiverSpots = [
-        { x: 510, y: 490 },
-        { x: 1100, y: 590 },
-        { x: 1740, y: 470 },
-        { x: 2350, y: 590 },
-        { x: 3000, y: 260 },
-        { x: 3750, y: 470 },
-        { x: 4400, y: 590 },
-        { x: 5100, y: 380 },
-        { x: 5750, y: 590 },
-        { x: 6400, y: 470 }
+        { x: 1800, y: 390 }, // Pos 1 (Benteng Kosod)
+        { x: 3800, y: 390 }, // Pos 2 (Candi Petirtaan)
+        { x: 5600, y: 380 }  // Pos 3 (Bale Wilwatikta)
       ];
       quiverSpots.forEach((qp) => this._spawnArrowLoot(qp.x, qp.y));
     }
@@ -857,9 +882,9 @@ export class PlatformerScene extends window.Phaser.Scene {
       cardSprite.setData('auraGfx', aura);
     });
 
-    // 2 Checkpoint di Rute Panjang (x = 2450 & x = 4800)
-    this.checkpointZone1 = this.add.rectangle(2450, 598, 64, 88, 0x4f6f3b, 0.4).setStrokeStyle(2, 0xd8a444);
-    this.add.text(2385, 525, 'Pos Gapura 1', {
+    // 2 Checkpoint di Rute Panjang (x = 2700 & x = 5100)
+    this.checkpointZone1 = this.add.rectangle(2700, 598, 64, 88, 0x4f6f3b, 0.4).setStrokeStyle(2, 0xd8a444);
+    this.add.text(2635, 525, 'Pos Gapura 1', {
       fontFamily: 'NusantaraBody, sans-serif',
       fontSize: '11.5px',
       color: '#F2E3C2',
@@ -867,8 +892,8 @@ export class PlatformerScene extends window.Phaser.Scene {
       padding: { x: 5, y: 2 }
     });
 
-    this.checkpointZone2 = this.add.rectangle(4800, 598, 64, 88, 0x4f6f3b, 0.4).setStrokeStyle(2, 0xd8a444);
-    this.add.text(4725, 525, 'Bale Wilwatikta 2', {
+    this.checkpointZone2 = this.add.rectangle(5100, 598, 64, 88, 0x4f6f3b, 0.4).setStrokeStyle(2, 0xd8a444);
+    this.add.text(5025, 525, 'Bale Wilwatikta 2', {
       fontFamily: 'NusantaraBody, sans-serif',
       fontSize: '11.5px',
       color: '#F2E3C2',
@@ -1096,7 +1121,7 @@ export class PlatformerScene extends window.Phaser.Scene {
     enemy.setData('punchCooldown', 1150);
 
     // Kuda-kuda maju memukul dengan tinju bayangan (Animasi tangan meninju!)
-    enemy.setFlipX(dirToPlayer > 0);
+    enemy.setFlipX(dirToPlayer < 0);
     enemy.setVelocityX(dirToPlayer * 230);
 
     if (this.anims.exists('enemy_brawler_punch')) {
@@ -1150,7 +1175,7 @@ export class PlatformerScene extends window.Phaser.Scene {
     if (!boss || !boss.active) return;
     boss.setData('punchCooldown', 1450);
     boss.setData('isPunching', true);
-    boss.setFlipX(dirToPlayer > 0);
+    boss.setFlipX(dirToPlayer < 0);
     boss.setVelocityX(dirToPlayer * 340);
 
     if (this.anims.exists('boss_kala_punch')) {
@@ -1185,7 +1210,7 @@ export class PlatformerScene extends window.Phaser.Scene {
     if (!boss || !boss.active || !boss.body.touching.down) return;
     boss.setData('jumpCooldown', 4200);
     boss.setData('wasAirborne', true);
-    boss.setFlipX(dirToPlayer > 0);
+    boss.setFlipX(dirToPlayer < 0);
 
     if (this.anims.exists('boss_kala_punch')) {
       boss.anims.play('boss_kala_punch', true);
@@ -1715,9 +1740,9 @@ export class PlatformerScene extends window.Phaser.Scene {
       const isBoss = enemy.getData('isBoss');
       enemy.destroy();
 
-      // Efek pecah aksara Kawi & drop loot anak panah (HANYA jika memakai senjata panah!)
+      // Efek pecah aksara Kawi & drop loot anak panah (Langka 15%, HANYA jika memakai panah!)
       this._spawnKawiShatter(ex, ey);
-      if (!isBoss && this.selectedWeapon === 'panah' && Math.random() < 0.65) {
+      if (!isBoss && this.selectedWeapon === 'panah' && Math.random() < 0.15) {
         this._spawnArrowLoot(ex, ey + 10);
       }
 
@@ -1857,6 +1882,30 @@ export class PlatformerScene extends window.Phaser.Scene {
       this.player.setVelocity(0, 0);
     }
     this._syncHUD();
+  }
+
+  _handleAbyssFallDeath() {
+    if (this.isRespawning) return;
+    this.isRespawning = true;
+    this.hp = 0;
+    this._syncHUD();
+    this.audioSys.playQuizFeedback(false);
+    this.cameras.main.shake(320, 0.024);
+    this._showFloatingText(this.lastCheckpoint.x, this.lastCheckpoint.y - 45, '💀 Gugur ke Jurang!', '#E76F51');
+    this.player.setVelocity(0, 0);
+    this.cameras.main.fade(280, 160, 20, 20);
+    this.time.delayedCall(320, () => {
+      this.hp = this.maxHp;
+      this.player.setPosition(this.lastCheckpoint.x, this.lastCheckpoint.y - 35);
+      this.player.setVelocity(0, 0);
+      if (this.heroVisual) this.heroVisual.setPosition(this.lastCheckpoint.x, this.lastCheckpoint.y - 35);
+      if (this.playerShadow) this.playerShadow.setPosition(this.lastCheckpoint.x, this.lastCheckpoint.y + 40);
+      this.cameras.main.fadeFrom(280, 160, 20, 20);
+      this._syncHUD();
+      this.time.delayedCall(250, () => {
+        this.isRespawning = false;
+      });
+    });
   }
 
   _triggerPrasastiBlock(block) {
@@ -2020,10 +2069,8 @@ export class PlatformerScene extends window.Phaser.Scene {
     if (window.Phaser.Input.Keyboard.JustDown(this.keys.SHIFT)) this.performDash();
     if (window.Phaser.Input.Keyboard.JustDown(this.keys.U)) this.performUltimatePalapa();
 
-    if (this.player.y > 705) {
-      this._damagePlayer(this.modeCfg.cannotDie ? 0 : 15);
-      this.player.setPosition(this.lastCheckpoint.x, this.lastCheckpoint.y - 30);
-      this.player.setVelocity(0, 0);
+    if (this.player.y > 695) {
+      this._handleAbyssFallDeath();
     }
 
     // 5. Mekanik Khas Stage
@@ -2072,22 +2119,22 @@ export class PlatformerScene extends window.Phaser.Scene {
       }
     }
 
-    if (this.checkpointZone1 && Math.abs(this.player.x - 2450) < 55 && !this.checkpoint1Reached) {
+    if (this.checkpointZone1 && Math.abs(this.player.x - 2700) < 55 && !this.checkpoint1Reached) {
       this.checkpoint1Reached = true;
-      this.lastCheckpoint = { x: 2450, y: 550 };
+      this.lastCheckpoint = { x: 2700, y: 550 };
       this.hp = this.maxHp;
       this.damageMultiplier = 1.25;
       this.audioSys.playQuizFeedback(true);
-      this._showFloatingText(2450, 500, 'Checkpoint 1 Tersimpan!', '#D8A444');
+      this._showFloatingText(2700, 500, 'Checkpoint 1 Tersimpan!', '#D8A444');
       this._syncHUD();
     }
-    if (this.checkpointZone2 && Math.abs(this.player.x - 4800) < 55 && !this.checkpoint2Reached) {
+    if (this.checkpointZone2 && Math.abs(this.player.x - 5100) < 55 && !this.checkpoint2Reached) {
       this.checkpoint2Reached = true;
-      this.lastCheckpoint = { x: 4800, y: 550 };
+      this.lastCheckpoint = { x: 5100, y: 550 };
       this.hp = this.maxHp;
       this.damageMultiplier = 1.45;
       this.audioSys.playQuizFeedback(true);
-      this._showFloatingText(4800, 500, 'Checkpoint 2 Tersimpan!', '#D8A444');
+      this._showFloatingText(5100, 500, 'Checkpoint 2 Tersimpan!', '#D8A444');
       this._syncHUD();
     }
 
@@ -2126,7 +2173,7 @@ export class PlatformerScene extends window.Phaser.Scene {
           } else {
             enemy.setVelocityX(Math.sin(time * 0.008) * 65);
           }
-          enemy.setFlipX(dirToPlayer > 0);
+          enemy.setFlipX(dirToPlayer < 0);
 
           let pCd = (enemy.getData('punchCooldown') || 1000) - delta;
           let jCd = (enemy.getData('jumpCooldown') || 3200) - delta;
@@ -2149,7 +2196,7 @@ export class PlatformerScene extends window.Phaser.Scene {
           if (enemy.x > homeX + 180) dir = -1;
           enemy.setData('patrolDir', dir);
           enemy.setVelocityX(dir * 125);
-          enemy.setFlipX(dir > 0);
+          enemy.setFlipX(dir < 0);
         }
 
         // Animasi Boss Kala: Pukul / Hentak Jalan (kaki melangkah) / Diam
@@ -2170,7 +2217,7 @@ export class PlatformerScene extends window.Phaser.Scene {
       if (absDistX < 310 && Math.abs(this.player.y - enemy.y) < 120) {
         if (absDistX > 62 && !enemy.getData('isPunching')) {
           enemy.setVelocityX(dirToPlayer * ((enemy.getData('speed') || 115) * 1.18));
-          enemy.setFlipX(dirToPlayer > 0);
+          enemy.setFlipX(dirToPlayer < 0);
         } else if (absDistX <= 84 && punchCd <= 0) {
           this._performEnemyPunch(enemy, dirToPlayer);
         }
@@ -2181,7 +2228,7 @@ export class PlatformerScene extends window.Phaser.Scene {
         if (enemy.x > homeX + 135) dir = -1;
         enemy.setData('patrolDir', dir);
         enemy.setVelocityX(dir * (enemy.getData('speed') || 110));
-        enemy.setFlipX(dir > 0);
+        enemy.setFlipX(dir < 0);
       }
 
       // Animasi Musuh Biasa: Hurt / Pukul (tangan meninju) / Jalan (kaki melangkah) / Diam
@@ -2230,10 +2277,27 @@ export class PlatformerScene extends window.Phaser.Scene {
   // Diputar saat pemain berhasil menyelesaikan ujian Gerbang Waktu dari Gajah Mada!
   // ==========================================================================
   playTimePortalTransition(onComplete) {
+    if (this.scene && this.scene.isPaused()) {
+      this.scene.resume();
+    }
     this.inputLocked = true;
     if (this.player && this.player.body) {
+      this.player.body.setAllowGravity(false);
       this.player.setVelocity(0, 0);
     }
+
+    let finished = false;
+    const finishTransition = () => {
+      if (finished) return;
+      finished = true;
+      if (this.player && this.player.body) {
+        this.player.body.setAllowGravity(true);
+      }
+      if (typeof onComplete === 'function') {
+        onComplete();
+      }
+    };
+    setTimeout(finishTransition, 3200);
 
     const gateX = 7080;
     const gateY = 510;
@@ -2346,9 +2410,7 @@ export class PlatformerScene extends window.Phaser.Scene {
           delay: 450,
           onComplete: () => {
             this.time.delayedCall(350, () => {
-              if (typeof onComplete === 'function') {
-                onComplete();
-              }
+              finishTransition();
             });
           }
         });

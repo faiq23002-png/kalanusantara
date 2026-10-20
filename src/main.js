@@ -1681,6 +1681,8 @@ class KalaNusantaraApp {
     const q = this.gateQuestions[this.gateIndex];
     if (!q) {
       document.getElementById('gerbang-waktu-modal')?.classList.add('hidden');
+      this._syncPhaserPauseState();
+
       const totalQ = this.gateQuestions.length || 5;
       const accuracyPct = Math.round((this.gateCorrectCount / totalQ) * 100);
       const passedGate = accuracyPct >= 60;
@@ -1688,11 +1690,16 @@ class KalaNusantaraApp {
       if (passedGate) {
         // Player lulus ujian! Putar efek visual pusaran portal waktu di Phaser sebelum layar hasil/epilog!
         const scene = this._getActiveScene();
-        if (scene && typeof scene.playTimePortalTransition === 'function') {
-          scene.playTimePortalTransition(() => {
-            this._showStageResultScreen();
-          });
-          return;
+        if (scene) {
+          if (scene.scene && scene.scene.isPaused()) {
+            scene.scene.resume();
+          }
+          if (typeof scene.playTimePortalTransition === 'function') {
+            scene.playTimePortalTransition(() => {
+              this._showStageResultScreen();
+            });
+            return;
+          }
         }
       }
 
@@ -2321,11 +2328,61 @@ class KalaNusantaraApp {
           hideOverlay();
           setTimeout(hideOverlay, 550);
           scene.player.setPosition(6980, 560);
+          if (scene.heroVisual) scene.heroVisual.setPosition(6980, 560);
+          if (scene.playerShadow) scene.playerShadow.setPosition(6980, 600);
+          scene.cameras.main.centerOn(6980, 560);
           setTimeout(() => {
+            if (scene.scene && scene.scene.isPaused()) {
+              scene.scene.resume();
+            }
             scene.playTimePortalTransition(() => {
               this._showStageResultScreen();
             });
-          }, 300);
+          }, 350);
+        }
+      }, 80);
+    } else if (v3View === 'preview_chasm') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          const hideOverlay = () => {
+            document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+            document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          };
+          hideOverlay();
+          setTimeout(hideOverlay, 550);
+          scene.player.setPosition(980, 560);
+          if (scene.heroVisual) scene.heroVisual.setPosition(980, 560);
+          if (scene.playerShadow) scene.playerShadow.setPosition(980, 600);
+          scene.cameras.main.centerOn(1150, 480);
+        }
+      }, 80);
+    } else if (v3View === 'preview_enemy_walk') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          const hideOverlay = () => {
+            document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+            document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          };
+          hideOverlay();
+          setTimeout(hideOverlay, 550);
+          scene.player.setPosition(500, 560);
+          if (scene.heroVisual) scene.heroVisual.setPosition(500, 560);
+          if (scene.playerShadow) scene.playerShadow.setPosition(500, 600);
+          scene.cameras.main.centerOn(620, 520);
+          const enemy = scene.enemiesGroup.getChildren().find((e) => !e.getData('isBoss'));
+          if (enemy) {
+            enemy.setPosition(720, 560);
+          }
         }
       }, 80);
     } else if (v3View === 'epilog') {
