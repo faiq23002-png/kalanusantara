@@ -737,6 +737,133 @@ html, body {
   padding: 12px 18px;
 }
 
+/* Modal Popup Item Pembelajaran (Latar Biru Blur & Card Tengah) */
+.modal-learning-backdrop {
+  background: rgba(6, 18, 38, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  z-index: 600 !important;
+}
+
+.item-learning-card {
+  width: 95%;
+  max-width: 640px;
+  background: linear-gradient(135deg, #24130a 0%, #150904 100%);
+  border: 3px solid var(--emas);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(216, 164, 68, 0.35);
+  padding: 12px 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  animation: popLearningCard 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes popLearningCard {
+  0% { transform: scale(0.88); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.learning-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px dashed rgba(216, 164, 68, 0.35);
+  padding-bottom: 5px;
+  margin-bottom: 6px;
+}
+
+.learning-badge {
+  font: 800 0.76rem var(--font-display);
+  color: var(--emas-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.learning-stage-pill {
+  font-size: 0.72rem;
+  background: rgba(216, 164, 68, 0.2);
+  color: var(--emas-light);
+  border: 1px solid var(--emas-dark);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.learning-content-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  margin: 4px 0;
+}
+
+.learning-art-wrap {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--emas);
+  background: radial-gradient(circle, #3d1c10 0%, #100603 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7);
+}
+
+.learning-card-img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+}
+
+.learning-text-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.learning-title {
+  font: 800 1.08rem var(--font-display);
+  color: var(--emas-light);
+  margin: 0 0 4px;
+  line-height: 1.25;
+}
+
+.learning-desc {
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: #f3dcc2;
+  margin: 0 0 6px;
+}
+
+.learning-keyword-box {
+  background: rgba(42, 26, 18, 0.85);
+  border-left: 3px solid var(--emas);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.76rem;
+  color: #e6c89c;
+}
+
+.learning-keyword-lbl {
+  opacity: 0.8;
+  margin-right: 4px;
+}
+
+.learning-keyword-val {
+  color: var(--emas-light);
+}
+
+.learning-footer-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 2px dashed rgba(216, 164, 68, 0.25);
+}
+
 .stage-picker-wrap {
   width: 100%;
   max-width: 960px;

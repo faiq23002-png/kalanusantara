@@ -18,9 +18,11 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.stageConfig = data.stageConfig;
     this.balance = data.balance;
     this.artifactsList = data.artifactsList || [];
+    this.cardsList = data.cardsList || [];
     this.storage = data.storage;
     this.audioSys = data.audioSys;
     this.callbacks = data.callbacks || {};
+    this.collectedStageCards = [];
 
     this.modeKey = this.storage.state.gameMode || 'belajar';
     this.modeCfg = this.balance.modes[this.modeKey];
@@ -105,10 +107,18 @@ export class PlatformerScene extends window.Phaser.Scene {
       });
     });
 
-    // 3. Musuh Petarung Tinju & Boss Kala
+    // 3. Musuh Petarung Tinju & Boss Kala (Spritesheet Beranimasi: Jalan Kaki Bergerak & Tinju Memukul!)
     this.load.image('bayangan_petarung', './public/assets/enemies/bayangan_petarung.png');
     this.load.image('bayangan_tombak', './public/assets/enemies/bayangan_tombak.png');
     this.load.image('boss_kala', './public/assets/enemies/boss_kala.png');
+    this.load.spritesheet('sheet_bayangan_petarung', './public/assets/enemies/sheet_bayangan_petarung.png', {
+      frameWidth: 200,
+      frameHeight: 260
+    });
+    this.load.spritesheet('sheet_boss_kala', './public/assets/enemies/sheet_boss_kala.png', {
+      frameWidth: 320,
+      frameHeight: 360
+    });
 
     // 4. Senjata & Proyektil + Looting Anak Panah (item_quiver)
     this.load.image('weapon_keris', './public/assets/items/weapon_keris.png');
@@ -159,6 +169,7 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.coinsGroup = this.physics.add.group({ allowGravity: false });
     this.quiversGroup = this.physics.add.group({ allowGravity: false });
     this.artifactsGroup = this.physics.add.group({ allowGravity: false });
+    this.learningCardsGroup = this.physics.add.group({ allowGravity: false });
     this.enemiesGroup = this.physics.add.group();
     this.projectilesGroup = this.physics.add.group({ allowGravity: false });
     this.enemyProjectiles = this.physics.add.group({ allowGravity: false });
@@ -212,6 +223,9 @@ export class PlatformerScene extends window.Phaser.Scene {
         }
       });
     });
+
+    // Daftarkan Animasi Musuh Petarung (Jalan Berayun & Tinju) & Boss Kala
+    this._createEnemyAnimations();
 
     // Bayangan elips di tanah tepat di bawah telapak kaki
     this.playerShadow = this.add
@@ -303,6 +317,24 @@ export class PlatformerScene extends window.Phaser.Scene {
           text: `${artData.kindLabel}: ${artData.blurb}`
         });
         this._syncHUD();
+      }
+    });
+
+    // Pengambilan Item Pembelajaran (Pop-up Card di Tengah & Latar Blur)
+    this.physics.add.overlap(this.player, this.learningCardsGroup, (player, cardSprite) => {
+      const cardData = cardSprite.getData('cardData');
+      cardSprite.getData('labelObj')?.destroy();
+      cardSprite.getData('auraGfx')?.destroy();
+      cardSprite.destroy();
+
+      if (cardData) {
+        if (!this.collectedStageCards.includes(cardData.id)) {
+          this.collectedStageCards.push(cardData.id);
+        }
+        // Hentikan gerak pemain seketika agar tidak tergelincir
+        this.player.setVelocity(0, 0);
+        this.audioSys.playQuizFeedback(true);
+        this.callbacks.onCollectLearningCard?.(cardData);
       }
     });
 
@@ -765,6 +797,66 @@ export class PlatformerScene extends window.Phaser.Scene {
       sprite.setData('labelObj', lbl);
     });
 
+    // 5 Kartu Materi Pembelajaran Tersebar di Sepanjang Rute 7200px
+    const cardPositions = [
+      { x: 680, y: 375 },   // Seksi 1 (Lantai 2 Gapura)
+      { x: 1960, y: 255 },  // Seksi 2 (Lantai 3 Benteng)
+      { x: 3080, y: 255 },  // Seksi 3 (Lantai 3 Taman Sari)
+      { x: 4280, y: 240 },  // Seksi 4 (Lantai 3-4 Petirtaan)
+      { x: 5520, y: 235 }   // Seksi 5 (Lantai 3 Bale Agung)
+    ];
+
+    const cardsToSpawn = (this.cardsList && this.cardsList.length > 0)
+      ? this.cardsList.slice(0, 5)
+      : [];
+
+    cardsToSpawn.forEach((card, idx) => {
+      const pos = cardPositions[idx] || { x: 800 + idx * 1200, y: 350 };
+      const cardSprite = this.learningCardsGroup.create(pos.x, pos.y, 'block_prasasti');
+      cardSprite.setDisplaySize(48, 48);
+      cardSprite.body.setAllowGravity(false);
+      cardSprite.body.setImmovable(true);
+      cardSprite.setData('cardData', { ...card, idx: idx + 1 });
+      cardSprite.setDepth(12);
+
+      const aura = this.add.image(pos.x, pos.y, 'vfx_surya')
+        .setDisplaySize(68, 68)
+        .setTint(0xffd700)
+        .setAlpha(0.65)
+        .setDepth(11);
+
+      const lbl = this.add.text(pos.x, pos.y - 42, `📖 ${card.title}`, {
+        fontFamily: 'NusantaraBody, sans-serif',
+        fontSize: '11px',
+        color: '#F2D27A',
+        stroke: '#2A1A12',
+        strokeThickness: 3,
+        backgroundColor: '#061226ee',
+        padding: { x: 6, y: 3 }
+      }).setOrigin(0.5).setDepth(13);
+
+      this.tweens.add({
+        targets: [cardSprite, aura, lbl],
+        y: '-=10',
+        duration: 900,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+
+      this.tweens.add({
+        targets: aura,
+        scale: 1.25,
+        alpha: 0.35,
+        duration: 800,
+        yoyo: true,
+        repeat: -1
+      });
+
+      cardSprite.setData('labelObj', lbl);
+      cardSprite.setData('auraGfx', aura);
+    });
+
     // 2 Checkpoint di Rute Panjang (x = 2450 & x = 4800)
     this.checkpointZone1 = this.add.rectangle(2450, 598, 64, 88, 0x4f6f3b, 0.4).setStrokeStyle(2, 0xd8a444);
     this.add.text(2385, 525, 'Pos Gapura 1', {
@@ -843,16 +935,92 @@ export class PlatformerScene extends window.Phaser.Scene {
   // ==========================================================================
   // MUSUH PETARUNG TINJU & BOSS KALA YANG AKTIF BERGERAK/MELOMPAT
   // ==========================================================================
+  _createEnemyAnimations() {
+    if (this.textures.exists('sheet_bayangan_petarung')) {
+      if (!this.anims.exists('enemy_brawler_walk')) {
+        this.anims.create({
+          key: 'enemy_brawler_walk',
+          frames: this.anims.generateFrameNumbers('sheet_bayangan_petarung', { frames: [1, 2] }),
+          frameRate: 6,
+          repeat: -1
+        });
+      }
+      if (!this.anims.exists('enemy_brawler_idle')) {
+        this.anims.create({
+          key: 'enemy_brawler_idle',
+          frames: [{ key: 'sheet_bayangan_petarung', frame: 0 }],
+          frameRate: 1
+        });
+      }
+      if (!this.anims.exists('enemy_brawler_punch')) {
+        this.anims.create({
+          key: 'enemy_brawler_punch',
+          frames: [{ key: 'sheet_bayangan_petarung', frame: 3 }],
+          frameRate: 1
+        });
+      }
+      if (!this.anims.exists('enemy_brawler_hurt')) {
+        this.anims.create({
+          key: 'enemy_brawler_hurt',
+          frames: [{ key: 'sheet_bayangan_petarung', frame: 4 }],
+          frameRate: 1
+        });
+      }
+    }
+
+    if (this.textures.exists('sheet_boss_kala')) {
+      if (!this.anims.exists('boss_kala_walk')) {
+        this.anims.create({
+          key: 'boss_kala_walk',
+          frames: this.anims.generateFrameNumbers('sheet_boss_kala', { frames: [1, 2] }),
+          frameRate: 4,
+          repeat: -1
+        });
+      }
+      if (!this.anims.exists('boss_kala_idle')) {
+        this.anims.create({
+          key: 'boss_kala_idle',
+          frames: [{ key: 'sheet_boss_kala', frame: 0 }],
+          frameRate: 1
+        });
+      }
+      if (!this.anims.exists('boss_kala_punch')) {
+        this.anims.create({
+          key: 'boss_kala_punch',
+          frames: [{ key: 'sheet_boss_kala', frame: 3 }],
+          frameRate: 1
+        });
+      }
+      if (!this.anims.exists('boss_kala_hurt')) {
+        this.anims.create({
+          key: 'boss_kala_hurt',
+          frames: [{ key: 'sheet_boss_kala', frame: 4 }],
+          frameRate: 1
+        });
+      }
+    }
+  }
+
   _spawnShadowEnemy(x, y, typeKey) {
     const cfg = this.balance.enemies[typeKey] || this.balance.enemies.bayangan_petarung || this.balance.enemies.bayangan_tombak;
     const maxHp = Math.round(cfg.hp * this.modeCfg.enemyHpMultiplier);
 
-    // Pakai sprite Bayangan Petarung (tanpa tombak, bertangan tinju energi cyan-ungu!)
-    const tex = this.textures.exists('bayangan_petarung') ? 'bayangan_petarung' : 'bayangan_tombak';
-    const enemy = this.enemiesGroup.create(x, y, tex);
-    enemy.setDisplaySize(86, 86);
-    enemy.body.setSize(enemy.width * 0.62, enemy.height * 0.86);
-    enemy.body.setOffset(enemy.width * 0.19, enemy.height * 0.12);
+    // Pakai spritesheet Bayangan Petarung (bergerak kakinya saat jalan, meninju tangannya saat serang)
+    const usesSheet = this.textures.exists('sheet_bayangan_petarung');
+    const enemy = usesSheet
+      ? this.enemiesGroup.create(x, y, 'sheet_bayangan_petarung', 0)
+      : this.enemiesGroup.create(x, y, this.textures.exists('bayangan_petarung') ? 'bayangan_petarung' : 'bayangan_tombak');
+
+    if (usesSheet) {
+      enemy.setDisplaySize(92, 120);
+      enemy.body.setSize(95, 175);
+      enemy.body.setOffset(52, 75);
+    } else {
+      enemy.setDisplaySize(86, 86);
+      enemy.body.setSize(enemy.width * 0.62, enemy.height * 0.86);
+      enemy.body.setOffset(enemy.width * 0.19, enemy.height * 0.12);
+    }
+
     enemy.setCollideWorldBounds(true);
     enemy.setGravityY(980);
     enemy.setDepth(9);
@@ -870,6 +1038,7 @@ export class PlatformerScene extends window.Phaser.Scene {
     enemy.setData('patrolDir', -1);
     enemy.setData('punchCooldown', 600);
     enemy.setData('isPunching', false);
+    enemy.setData('isHurt', false);
 
     const hpBarGfx = this.add.graphics().setDepth(14);
     enemy.setData('hpBarGfx', hpBarGfx);
@@ -880,10 +1049,21 @@ export class PlatformerScene extends window.Phaser.Scene {
     const cfg = this.balance.enemies.boss_kala;
     const maxHp = Math.round(cfg.hp * this.modeCfg.enemyHpMultiplier);
 
-    const boss = this.enemiesGroup.create(x, y, 'boss_kala');
-    boss.setDisplaySize(172, 172);
-    boss.body.setSize(boss.width * 0.66, boss.height * 0.86);
-    boss.body.setOffset(boss.width * 0.17, boss.height * 0.12);
+    const usesSheet = this.textures.exists('sheet_boss_kala');
+    const boss = usesSheet
+      ? this.enemiesGroup.create(x, y, 'sheet_boss_kala', 0)
+      : this.enemiesGroup.create(x, y, 'boss_kala');
+
+    if (usesSheet) {
+      boss.setDisplaySize(185, 208);
+      boss.body.setSize(180, 270);
+      boss.body.setOffset(70, 75);
+    } else {
+      boss.setDisplaySize(172, 172);
+      boss.body.setSize(boss.width * 0.66, boss.height * 0.86);
+      boss.body.setOffset(boss.width * 0.17, boss.height * 0.12);
+    }
+
     boss.setCollideWorldBounds(true);
     boss.setGravityY(980);
     boss.setDepth(11);
@@ -901,6 +1081,8 @@ export class PlatformerScene extends window.Phaser.Scene {
     boss.setData('jumpCooldown', 3200);
     boss.setData('dashCooldown', 4800);
     boss.setData('wasAirborne', false);
+    boss.setData('isPunching', false);
+    boss.setData('isHurt', false);
 
     const hpBarGfx = this.add.graphics().setDepth(15);
     boss.setData('hpBarGfx', hpBarGfx);
@@ -913,47 +1095,51 @@ export class PlatformerScene extends window.Phaser.Scene {
     enemy.setData('isPunching', true);
     enemy.setData('punchCooldown', 1150);
 
-    // Kuda-kuda maju memukul dengan tinju bayangan
+    // Kuda-kuda maju memukul dengan tinju bayangan (Animasi tangan meninju!)
     enemy.setFlipX(dirToPlayer > 0);
     enemy.setVelocityX(dirToPlayer * 230);
+
+    if (this.anims.exists('enemy_brawler_punch')) {
+      enemy.anims.play('enemy_brawler_punch', true);
+    }
 
     const origScaleX = enemy.scaleX;
     const origScaleY = enemy.scaleY;
     this.tweens.add({
       targets: enemy,
-      scaleX: origScaleX * 1.22,
-      scaleY: origScaleY * 0.92,
-      duration: 110,
+      scaleX: origScaleX * 1.15,
+      scaleY: origScaleY * 0.95,
+      duration: 130,
       yoyo: true,
       onComplete: () => {
         if (enemy.active) {
-          enemy.setDisplaySize(86, 86);
           enemy.setData('isPunching', false);
         }
       }
     });
 
     // Efek Visual Tinju Bayangan (Fist Impact Wave)
-    const punchX = enemy.x + dirToPlayer * 52;
-    const punchY = enemy.y - 4;
+    const punchX = enemy.x + dirToPlayer * 54;
+    const punchY = enemy.y - 8;
     const fistGfx = this.add.graphics().setDepth(15);
     fistGfx.fillStyle(0x9d4edd, 0.85);
     fistGfx.lineStyle(3, 0x70e2ff, 1);
-    fistGfx.fillCircle(punchX, punchY, 20);
-    fistGfx.strokeCircle(punchX, punchY, 22);
+    fistGfx.fillCircle(punchX, punchY, 22);
+    fistGfx.strokeCircle(punchX, punchY, 24);
 
     this.tweens.add({
       targets: fistGfx,
+      scale: 1.4,
       alpha: 0,
-      duration: 210,
+      duration: 230,
       onComplete: () => fistGfx.destroy()
     });
 
     // Cek apakah tinju mengenai pemain
-    this.time.delayedCall(65, () => {
+    this.time.delayedCall(70, () => {
       if (!enemy.active || !this.player?.active || this.isDashing) return;
       const dist = window.Phaser.Math.Distance.Between(punchX, punchY, this.player.x, this.player.y);
-      if (dist <= 78) {
+      if (dist <= 82) {
         this._damagePlayer(enemy.getData('damage') || 10);
         this.player.setVelocityX(dirToPlayer * 190);
       }
@@ -963,15 +1149,24 @@ export class PlatformerScene extends window.Phaser.Scene {
   _performBossPunch(boss, dirToPlayer) {
     if (!boss || !boss.active) return;
     boss.setData('punchCooldown', 1450);
+    boss.setData('isPunching', true);
     boss.setFlipX(dirToPlayer > 0);
     boss.setVelocityX(dirToPlayer * 340);
+
+    if (this.anims.exists('boss_kala_punch')) {
+      boss.anims.play('boss_kala_punch', true);
+    }
+
+    this.time.delayedCall(450, () => {
+      if (boss.active) boss.setData('isPunching', false);
+    });
 
     this.audioSys.playPunch(3);
     this.cameras.main.shake(150, 0.009);
 
     const hitX = boss.x + dirToPlayer * 95;
     const hitY = boss.y + 10;
-    const smashFx = this.add.image(hitX, hitY, 'vfx_surya').setDisplaySize(115, 115).setTint(0xb4492f).setDepth(16);
+    const smashFx = this.add.image(hitX, hitY, 'vfx_surya').setDisplaySize(125, 125).setTint(0xb4492f).setDepth(16);
     this.tweens.add({
       targets: smashFx,
       scale: 1.55,
@@ -980,7 +1175,7 @@ export class PlatformerScene extends window.Phaser.Scene {
       onComplete: () => smashFx.destroy()
     });
 
-    if (!this.isDashing && window.Phaser.Math.Distance.Between(hitX, hitY, this.player.x, this.player.y) <= 115) {
+    if (!this.isDashing && window.Phaser.Math.Distance.Between(hitX, hitY, this.player.x, this.player.y) <= 120) {
       this._damagePlayer(boss.getData('damage') || 18);
       this.player.setVelocity(dirToPlayer * 280, -220);
     }
@@ -991,6 +1186,10 @@ export class PlatformerScene extends window.Phaser.Scene {
     boss.setData('jumpCooldown', 4200);
     boss.setData('wasAirborne', true);
     boss.setFlipX(dirToPlayer > 0);
+
+    if (this.anims.exists('boss_kala_punch')) {
+      boss.anims.play('boss_kala_punch', true);
+    }
 
     // Boss melompat tinggi mengejar posisi pemain!
     boss.setVelocity(dirToPlayer * 275, -560);
@@ -1476,11 +1675,24 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.energy = Math.min(100, this.energy + 8);
 
     enemy.setTintFill(0xffffff);
+    enemy.setData('isHurt', true);
+    if (enemy.getData('isBoss') && this.anims.exists('boss_kala_hurt')) {
+      enemy.anims.play('boss_kala_hurt', true);
+    } else if (this.anims.exists('enemy_brawler_hurt')) {
+      enemy.anims.play('enemy_brawler_hurt', true);
+    }
+
     this.time.delayedCall(65, () => {
       if (!enemy.active) return;
       enemy.clearTint();
       const tk = enemy.getData('typeKey');
       if (tk === 'bayangan_perisai') enemy.setTint(0x70e2ff);
+    });
+
+    this.time.delayedCall(260, () => {
+      if (enemy.active) {
+        enemy.setData('isHurt', false);
+      }
     });
 
     enemy.setVelocityX(this.facing * 150);
@@ -1939,6 +2151,15 @@ export class PlatformerScene extends window.Phaser.Scene {
           enemy.setVelocityX(dir * 125);
           enemy.setFlipX(dir > 0);
         }
+
+        // Animasi Boss Kala: Pukul / Hentak Jalan (kaki melangkah) / Diam
+        if (enemy.getData('isPunching') || enemy.getData('wasAirborne')) {
+          if (this.anims.exists('boss_kala_punch')) enemy.anims.play('boss_kala_punch', true);
+        } else if (Math.abs(enemy.body.velocity.x) > 15) {
+          if (this.anims.exists('boss_kala_walk')) enemy.anims.play('boss_kala_walk', true);
+        } else {
+          if (this.anims.exists('boss_kala_idle')) enemy.anims.play('boss_kala_idle', true);
+        }
         return;
       }
 
@@ -1961,6 +2182,17 @@ export class PlatformerScene extends window.Phaser.Scene {
         enemy.setData('patrolDir', dir);
         enemy.setVelocityX(dir * (enemy.getData('speed') || 110));
         enemy.setFlipX(dir > 0);
+      }
+
+      // Animasi Musuh Biasa: Hurt / Pukul (tangan meninju) / Jalan (kaki melangkah) / Diam
+      if (enemy.getData('isHurt')) {
+        if (this.anims.exists('enemy_brawler_hurt')) enemy.anims.play('enemy_brawler_hurt', true);
+      } else if (enemy.getData('isPunching')) {
+        if (this.anims.exists('enemy_brawler_punch')) enemy.anims.play('enemy_brawler_punch', true);
+      } else if (Math.abs(enemy.body.velocity.x) > 15) {
+        if (this.anims.exists('enemy_brawler_walk')) enemy.anims.play('enemy_brawler_walk', true);
+      } else {
+        if (this.anims.exists('enemy_brawler_idle')) enemy.anims.play('enemy_brawler_idle', true);
       }
     });
 
@@ -1986,9 +2218,141 @@ export class PlatformerScene extends window.Phaser.Scene {
         this.callbacks.onReachTimeGate?.({
           stageId: this.stageConfig.id,
           elapsedSec,
-          artifactsCollected: this.collectedStageArtifacts
+          artifactsCollected: this.collectedStageArtifacts,
+          cardsCollected: this.collectedStageCards || []
         });
       }
     }
+  }
+
+  // ==========================================================================
+  // EFEK VISUAL PUSARAN PORTAL WAKTU (TIME PORTAL CELESTIAL VORTEX)
+  // Diputar saat pemain berhasil menyelesaikan ujian Gerbang Waktu dari Gajah Mada!
+  // ==========================================================================
+  playTimePortalTransition(onComplete) {
+    this.inputLocked = true;
+    if (this.player && this.player.body) {
+      this.player.setVelocity(0, 0);
+    }
+
+    const gateX = 7080;
+    const gateY = 510;
+
+    // Pan & Zoom Kamera ke Gerbang Waktu
+    this.cameras.main.stopFollow();
+    this.cameras.main.pan(gateX, gateY, 950, 'Power2');
+    this.cameras.main.zoomTo(1.3, 950, 'Power2');
+
+    // Buat efek visual pusaran portal waktu berputar
+    const portalContainer = this.add.container(gateX, gateY).setDepth(25);
+
+    const ringOuter = this.add.circle(0, 0, 75, 0x4f6f3b, 0).setStrokeStyle(4, 0xd8a444, 0.9);
+    const ringMid = this.add.circle(0, 0, 52, 0x70e2ff, 0).setStrokeStyle(3, 0x70e2ff, 0.85);
+    const ringInner = this.add.circle(0, 0, 30, 0xffffff, 0.35).setStrokeStyle(2, 0xf2e3c2, 1);
+    const coreGlow = this.add.image(0, 0, 'vfx_surya').setDisplaySize(140, 140).setTint(0x70e2ff).setAlpha(0.85);
+
+    portalContainer.add([ringOuter, ringMid, ringInner, coreGlow]);
+
+    this.tweens.add({
+      targets: ringOuter,
+      scale: 1.25,
+      alpha: { from: 0.9, to: 0.4 },
+      duration: 800,
+      yoyo: true,
+      repeat: -1
+    });
+    this.tweens.add({
+      targets: ringMid,
+      angle: 360,
+      duration: 1800,
+      repeat: -1
+    });
+    this.tweens.add({
+      targets: ringInner,
+      angle: -360,
+      duration: 1200,
+      repeat: -1
+    });
+    this.tweens.add({
+      targets: coreGlow,
+      scale: 1.35,
+      alpha: 1,
+      duration: 500,
+      yoyo: true,
+      repeat: -1
+    });
+
+    // Partikel berkilau yang terhisap ke dalam pusaran portal
+    for (let i = 0; i < 45; i++) {
+      const angle = (Math.PI * 2 * i) / 45;
+      const startDist = window.Phaser.Math.Between(90, 180);
+      const pColor = i % 2 === 0 ? 0xd8a444 : 0x70e2ff;
+      const p = this.add.circle(
+        gateX + Math.cos(angle) * startDist,
+        gateY + Math.sin(angle) * startDist,
+        window.Phaser.Math.Between(3, 6),
+        pColor,
+        0.85
+      ).setDepth(26);
+
+      this.tweens.add({
+        targets: p,
+        x: gateX,
+        y: gateY,
+        scale: 0.2,
+        alpha: 0,
+        duration: window.Phaser.Math.Between(700, 1500),
+        delay: window.Phaser.Math.Between(100, 700),
+        repeat: -1
+      });
+    }
+
+    // Karakter berjalan masuk ke pusaran portal lalu melayang & larut dalam cahaya
+    this.tweens.add({
+      targets: [this.player, this.heroVisual, this.playerShadow],
+      x: gateX,
+      y: gateY + 25,
+      duration: 900,
+      ease: 'Power1',
+      onComplete: () => {
+        this.audioSys.playSkillSurya();
+        this.audioSys.playGongBoss();
+
+        // Karakter melayang naik ke pusat pusaran & larut
+        this.tweens.add({
+          targets: [this.heroVisual, this.playerShadow],
+          y: gateY,
+          scale: 0.05,
+          alpha: 0,
+          angle: 180,
+          duration: 900,
+          ease: 'Cubic.easeIn'
+        });
+
+        // Flash cahaya putih keemasan yang menyelimuti layar
+        const flashOverlay = this.add.rectangle(
+          this.cameras.main.worldView.x + this.cameras.main.worldView.width / 2,
+          this.cameras.main.worldView.y + this.cameras.main.worldView.height / 2,
+          1500,
+          900,
+          0xfff8e7,
+          0
+        ).setDepth(999);
+
+        this.tweens.add({
+          targets: flashOverlay,
+          alpha: 1,
+          duration: 650,
+          delay: 450,
+          onComplete: () => {
+            this.time.delayedCall(350, () => {
+              if (typeof onComplete === 'function') {
+                onComplete();
+              }
+            });
+          }
+        });
+      }
+    });
   }
 }

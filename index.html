@@ -461,6 +461,38 @@
   </div>
 
   <!-- ========================================================================
+       MODAL PENGAMBILAN ITEM PEMBELAJARAN (POP UP CARD DITENGAH & LATAR BIRU/BLUR)
+       ======================================================================== -->
+  <div id="item-learning-modal" class="modal-overlay modal-learning-backdrop hidden">
+    <div class="item-learning-card">
+      <div class="learning-header">
+        <span class="learning-badge" id="learning-card-badge">Kitab Pengetahuan Majapahit</span>
+        <span class="learning-stage-pill" id="learning-card-stage-pill">Materi Sejarah</span>
+      </div>
+      <div class="learning-content-row">
+        <div class="learning-art-wrap">
+          <img id="learning-card-img" src="./public/assets/items/tile_brick.png" alt="Materi Majapahit" class="learning-card-img" />
+        </div>
+        <div class="learning-text-col">
+          <h3 id="learning-card-title" class="learning-title">Arsitektur Bata Merah (Kosod)</h3>
+          <p id="learning-card-desc" class="learning-desc">
+            Bangunan Majapahit memakai bata merah dengan teknik gosok-rekat (kosod) tanpa semen modern. Contohnya adalah Gapura Wringin Lawang.
+          </p>
+          <div class="learning-keyword-box">
+            <span class="learning-keyword-lbl">Kata Kunci:</span>
+            <strong id="learning-card-keyword" class="learning-keyword-val">Bata Merah • Kosod</strong>
+          </div>
+        </div>
+      </div>
+      <div class="learning-footer-actions">
+        <button type="button" id="btn-learning-dismiss" class="btn btn--primary btn--lg">
+          📖 Pahami Materi &amp; Lanjutkan Petualangan ▸
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
        9. MODAL JEDA, SETELAN (⚙), MUSEUM, TOKO, RAPOR, & INFO GURU
        ======================================================================== -->
   <div id="pause-modal" class="modal-overlay hidden">

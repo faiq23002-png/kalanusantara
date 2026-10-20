@@ -709,6 +709,17 @@ class KalaNusantaraApp {
       this.stopGameplayAndReturnMenu();
     });
 
+    // Tombol Pahami Materi & Lanjutkan Petualangan (Tutup Modal & Lanjut Main)
+    document.getElementById('btn-learning-dismiss')?.addEventListener('click', () => {
+      document.getElementById('item-learning-modal')?.classList.add('hidden');
+      this._syncPhaserPauseState();
+      this.audio.playCoinGobog();
+      const scene = this._getActiveScene();
+      if (scene && scene.player) {
+        scene._showFloatingText?.(scene.player.x, scene.player.y - 50, '📖 Pengetahuan Dicatat! Siap diuji Gajah Mada', '#F2D27A');
+      }
+    });
+
     // Tombol di dalam Modal Setelan (⚙)
     document.getElementById('btn-setting-audio')?.addEventListener('click', () => {
       this.audio.toggleMute();
@@ -1355,7 +1366,8 @@ class KalaNusantaraApp {
       'gerbang-waktu-modal',
       'cek-cepat-modal',
       'hasil-stage-modal',
-      'epilog-modal'
+      'epilog-modal',
+      'item-learning-modal'
     ];
     const anyOpen = blockingModalIds.some((id) => {
       const el = document.getElementById(id);
@@ -1418,6 +1430,7 @@ class KalaNusantaraApp {
     this.audio.startGamelanLoop();
 
     const stageArtifacts = this.artifacts.filter((a) => a.stage === stageObj.id);
+    const stageCards = this.cards.filter((c) => c.stage === stageObj.id);
 
     if (this.phaserGame) {
       this.phaserGame.destroy(true);
@@ -1448,6 +1461,7 @@ class KalaNusantaraApp {
       stageConfig: stageObj,
       balance: this.balance,
       artifactsList: stageArtifacts,
+      cardsList: stageCards,
       storage: this.storage,
       audioSys: this.audio,
       callbacks: {
@@ -1458,6 +1472,7 @@ class KalaNusantaraApp {
             (dlg.text || '').replace(/Arka/g, this.storage.state.profile.nama),
             dlg.portrait || './public/assets/characters/npc_gajah_mada.png'
           ),
+        onCollectLearningCard: (card) => this.showItemLearningModal(card),
         onBossShieldQuestion: (qObj, pillarChoices) => this._updateBossQuestionBanner(qObj, pillarChoices),
         onBannerMessage: (msg) =>
           this.showNpcBalloon(
@@ -1626,13 +1641,39 @@ class KalaNusantaraApp {
   // ==========================================================================
   openGerbangWaktu(runData) {
     this.lastStageRunData = runData;
-    this.gateQuestions = this.questions.filter((q) => q.stage === this.activeStage.id);
+    const collectedCards = runData?.cardsCollected || [];
+
+    // Soal yang ditanyakan Mahapatih Gajah Mada menguji kartu materi yang telah ditemukan!
+    let matchingQuestions = [];
+    if (collectedCards.length > 0) {
+      matchingQuestions = this.questions.filter(
+        (q) => q.stage === this.activeStage.id && collectedCards.includes(q.cardRef)
+      );
+    }
+    // Jika belum ada kartu atau soal kurang dari 5, lengkapi dengan seluruh soal stage ini
+    if (matchingQuestions.length < 5) {
+      const remainingQuestions = this.questions.filter(
+        (q) => q.stage === this.activeStage.id && !matchingQuestions.some((mq) => mq.id === q.id)
+      );
+      matchingQuestions = matchingQuestions.concat(remainingQuestions);
+    }
+
+    this.gateQuestions = matchingQuestions;
     this.gateIndex = 0;
     this.gateCorrectCount = 0;
     this.gateWrongReviews = [];
 
-    this._renderGateQuestionStep();
-    this.showModal('gerbang-waktu-modal');
+    // Balon sambutan Mahapatih Gajah Mada sebelum ujian dibuka
+    this.showNpcBalloon(
+      'Mahapatih Gajah Mada',
+      `Tabik, ${this.storage.state.profile.nama}! Kamu telah menemukan ${collectedCards.length} kitab materi sejarah di medan laga. Sekarang, buktikan pemahamanmu di hadapanku sebelum gerbang waktu terbuka!`,
+      './public/assets/characters/npc_gajah_mada.png'
+    );
+
+    setTimeout(() => {
+      this._renderGateQuestionStep();
+      this.showModal('gerbang-waktu-modal');
+    }, 1100);
   }
 
   _renderGateQuestionStep() {
@@ -1640,6 +1681,21 @@ class KalaNusantaraApp {
     const q = this.gateQuestions[this.gateIndex];
     if (!q) {
       document.getElementById('gerbang-waktu-modal')?.classList.add('hidden');
+      const totalQ = this.gateQuestions.length || 5;
+      const accuracyPct = Math.round((this.gateCorrectCount / totalQ) * 100);
+      const passedGate = accuracyPct >= 60;
+
+      if (passedGate) {
+        // Player lulus ujian! Putar efek visual pusaran portal waktu di Phaser sebelum layar hasil/epilog!
+        const scene = this._getActiveScene();
+        if (scene && typeof scene.playTimePortalTransition === 'function') {
+          scene.playTimePortalTransition(() => {
+            this._showStageResultScreen();
+          });
+          return;
+        }
+      }
+
       this._showStageResultScreen();
       return;
     }
@@ -2027,6 +2083,39 @@ class KalaNusantaraApp {
     `;
   }
 
+  // ==========================================================================
+  // MODAL KARTU PEMBELAJARAN INGAME (Pop-Up Card di Tengah & Latar Blur)
+  // ==========================================================================
+  showItemLearningModal(cardData) {
+    if (!cardData) return;
+    this.audio.playQuizFeedback(true);
+
+    const badgeEl = document.getElementById('learning-card-badge');
+    if (badgeEl) badgeEl.textContent = `Kitab Pengetahuan Majapahit · Bagian ${cardData.idx || 1}/5`;
+
+    const stagePillEl = document.getElementById('learning-card-stage-pill');
+    if (stagePillEl) stagePillEl.textContent = this.activeStage ? this.activeStage.title : 'Materi Sejarah';
+
+    const imgEl = document.getElementById('learning-card-img');
+    if (imgEl) {
+      imgEl.src = cardData.illustrationImg || cardData.bgPreview || './public/assets/items/tile_brick.png';
+    }
+
+    const titleEl = document.getElementById('learning-card-title');
+    if (titleEl) titleEl.textContent = cardData.title || 'Materi Sejarah Majapahit';
+
+    const descEl = document.getElementById('learning-card-desc');
+    if (descEl) {
+      const formattedText = (cardData.text || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      descEl.innerHTML = formattedText;
+    }
+
+    const keywordEl = document.getElementById('learning-card-keyword');
+    if (keywordEl) keywordEl.textContent = cardData.keyword || '';
+
+    this.showModal('item-learning-modal');
+  }
+
   showModal(id) {
     document.getElementById(id)?.classList.remove('hidden');
     this._syncPhaserPauseState();
@@ -2192,6 +2281,53 @@ class KalaNusantaraApp {
           }
         }
       }, 80);
+    } else if (v3View === 'preview_enemy') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          const hideOverlay = () => {
+            document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+            document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          };
+          hideOverlay();
+          setTimeout(hideOverlay, 550);
+          scene.player.setPosition(520, 560);
+          scene.cameras.main.centerOn(610, 520);
+          const firstEnemy = scene.enemiesGroup.getChildren().find((e) => !e.getData('isBoss'));
+          if (firstEnemy) {
+            firstEnemy.setPosition(650, 560);
+            setTimeout(() => {
+              if (firstEnemy.active) scene._performEnemyPunch(firstEnemy, -1);
+            }, 600);
+          }
+        }
+      }, 80);
+    } else if (v3View === 'preview_portal') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          const hideOverlay = () => {
+            document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+            document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          };
+          hideOverlay();
+          setTimeout(hideOverlay, 550);
+          scene.player.setPosition(6980, 560);
+          setTimeout(() => {
+            scene.playTimePortalTransition(() => {
+              this._showStageResultScreen();
+            });
+          }, 300);
+        }
+      }, 80);
     } else if (v3View === 'epilog') {
       this.openEpilogSequence();
     } else if (v3View === 'prolog' || v3View === 'intro') {
@@ -2212,6 +2348,9 @@ class KalaNusantaraApp {
       this.showBeranda();
       this._renderRaporModal();
       this.showModal('rapor-modal');
+    } else if (v3View === 'learning-card') {
+      this.activeStage = this.stages[0];
+      this.showItemLearningModal(this.cards[0]);
     }
   }
 }
