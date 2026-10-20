@@ -2385,6 +2385,91 @@ class KalaNusantaraApp {
           }
         }
       }, 80);
+    } else if (v3View === 'preview_attack_panah') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'panah';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          const hideOverlay = () => {
+            document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+            document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          };
+          hideOverlay();
+          setTimeout(hideOverlay, 550);
+          scene.player.setPosition(400, 560);
+          if (scene.heroVisual) scene.heroVisual.setPosition(400, 560);
+          scene.cameras.main.centerOn(450, 520);
+          setTimeout(() => {
+            scene.performBasicPunch();
+          }, 300);
+        }
+      }, 80);
+    } else if (v3View === 'preview_crouch_panah') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'panah';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          const hideOverlay = () => {
+            document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+            document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          };
+          hideOverlay();
+          setTimeout(hideOverlay, 550);
+          scene.player.setPosition(400, 560);
+          if (scene.heroVisual) scene.heroVisual.setPosition(400, 560);
+          scene.cameras.main.centerOn(450, 520);
+          scene.touchInput.down = true;
+          scene.isCrouching = true;
+        }
+      }, 80);
+    } else if (v3View === 'preview_attack_tombak') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'tombak';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          const hideOverlay = () => {
+            document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+            document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          };
+          hideOverlay();
+          setTimeout(hideOverlay, 550);
+          scene.player.setPosition(400, 560);
+          if (scene.heroVisual) scene.heroVisual.setPosition(400, 560);
+          scene.cameras.main.centerOn(450, 520);
+          setTimeout(() => {
+            scene.performBasicPunch();
+          }, 300);
+        }
+      }, 80);
+    } else if (v3View === 'preview_fall_death') {
+      this.storage.state.profile.karakter = 'arka';
+      this.storage.state.profile.senjata = 'keris';
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          const hideOverlay = () => {
+            document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+            document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          };
+          hideOverlay();
+          setTimeout(hideOverlay, 550);
+          // Drop player directly into Chasm 1 (x = 1200)
+          scene.player.setPosition(1200, 620);
+          if (scene.heroVisual) scene.heroVisual.setPosition(1200, 620);
+          scene.cameras.main.centerOn(1200, 560);
+        }
+      }, 80);
     } else if (v3View === 'epilog') {
       this.openEpilogSequence();
     } else if (v3View === 'prolog' || v3View === 'intro') {

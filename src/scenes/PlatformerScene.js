@@ -148,6 +148,7 @@ export class PlatformerScene extends window.Phaser.Scene {
     const worldHeight = 720;
     this.worldWidth = worldWidth;
     this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
+    this.physics.world.checkCollision.down = false;
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
 
     // 1. Background Unik Sesuai Stage (1=Trowulan, 2=Dermaga, 3=Candi Tikus, 4=Pelataran Agung)
@@ -217,6 +218,23 @@ export class PlatformerScene extends window.Phaser.Scene {
           this.anims.create({
             key: `${sKey}_crouch`,
             frames: this.anims.generateFrameNumbers(sKey, { frames: [4] }),
+            frameRate: 1,
+            repeat: -1
+          });
+        }
+        if (!this.anims.exists(`${sKey}_attack`)) {
+          // Pose menyerang nyata: Panah mengangkat busur & membidik, Tombak menyodorkan tombak, Keris menebas!
+          let attackFrames = [4];
+          if (w === 'panah') {
+            attackFrames = [4]; // Pose 4: Angkat busur jemparing & tarik anak panah membidik lurus ke depan!
+          } else if (w === 'tombak') {
+            attackFrames = [1]; // Pose 1: Sodorkan tombak waos lurus ke depan menghujam lawan!
+          } else if (w === 'keris') {
+            attackFrames = [4]; // Pose 4: Lunge maju & hunuskan keris ke depan!
+          }
+          this.anims.create({
+            key: `${sKey}_attack`,
+            frames: this.anims.generateFrameNumbers(sKey, { frames: attackFrames }),
             frameRate: 1,
             repeat: -1
           });
@@ -690,15 +708,6 @@ export class PlatformerScene extends window.Phaser.Scene {
 
     // Mekanik Khas Stage
     if (this.stageConfig.id === 1) {
-      this.brickTrigger = this.add.rectangle(980, 608, 44, 58, 0xd8a444).setStrokeStyle(2, 0xf2e3c2);
-      this.add.text(915, 552, 'Tuas Susun Bata', {
-        fontFamily: 'NusantaraBody, sans-serif',
-        fontSize: '12px',
-        color: '#F2E3C2',
-        backgroundColor: '#2A1A12dd',
-        padding: { x: 6, y: 3 }
-      });
-
       const wall = this.crackedWalls.create(1650, 430, 'tile_brick');
       wall.setDisplaySize(48, 130).setTint(0xb4492f).refreshBody();
       wall.setData(
@@ -1259,16 +1268,17 @@ export class PlatformerScene extends window.Phaser.Scene {
 
   _performBowShot(now) {
     this.attackLockUntil = now + 230;
+    this.attackAnimUntil = now + 260;
     this.audioSys.playPunch(1);
 
     // Jika anak panah habis, lakukan pukulan busur jarak dekat & beri tahu pemain untuk ambil loot panah!
     if (this.arrows <= 0) {
       this._showFloatingText(this.player.x, this.player.y - 48, 'Panah Habis! Ambil Panah (+5) di Arena!', '#E76F51');
-      this.heroAttackOffsetX = this.facing * 8;
+      this.heroAttackOffsetX = this.facing * 10;
       this.tweens.add({
         targets: this,
         heroAttackOffsetX: 0,
-        duration: 75,
+        duration: 90,
         ease: 'Quad.easeOut'
       });
       const hitX = this.player.x + this.facing * 54;
@@ -1295,12 +1305,12 @@ export class PlatformerScene extends window.Phaser.Scene {
     if (aimUp) angleDeg = -28;
     else if (aimDown) angleDeg = 28;
 
-    // Hentakan tembakan busur pada visual karakter
-    this.heroAttackOffsetX = -this.facing * 8;
+    // Gerakan mengangkat busur & menarik anak panah maju ke depan
+    this.heroAttackOffsetX = this.facing * 12;
     this.tweens.add({
       targets: this,
       heroAttackOffsetX: 0,
-      duration: 85,
+      duration: 110,
       ease: 'Quad.easeOut'
     });
 
@@ -1335,17 +1345,18 @@ export class PlatformerScene extends window.Phaser.Scene {
 
   _performSpearThrust(now) {
     this.attackLockUntil = now + 240;
+    this.attackAnimUntil = now + 280;
     if (now > this.comboResetTimer) this.comboStep = 0;
     this.comboStep = (this.comboStep % 3) + 1;
     this.comboResetTimer = now + 950;
     this.audioSys.playPunch(this.comboStep);
 
-    // Dorongan tusukan tombak waos pada visual karakter
-    this.heroAttackOffsetX = this.facing * 16;
+    // Dorongan tusukan tombak waos maju lurus ke depan pada visual karakter
+    this.heroAttackOffsetX = this.facing * 24;
     this.tweens.add({
       targets: this,
       heroAttackOffsetX: 0,
-      duration: 90,
+      duration: 130,
       ease: 'Quad.easeOut'
     });
 
@@ -1388,6 +1399,7 @@ export class PlatformerScene extends window.Phaser.Scene {
 
   _performKerisSlash(now) {
     this.attackLockUntil = now + 195;
+    this.attackAnimUntil = now + 240;
     const isAirborne = !this.player.body.touching.down;
     let dmg = this.balance.hero.airKickDamage;
 
@@ -1402,12 +1414,12 @@ export class PlatformerScene extends window.Phaser.Scene {
     }
     dmg = Math.round(dmg * this.damageMultiplier);
 
-    // Hentakan tebasan keris maju ke depan pada visual karakter
-    this.heroAttackOffsetX = this.facing * 12;
+    // Hentakan tebasan keris lunge maju ke depan pada visual karakter
+    this.heroAttackOffsetX = this.facing * 18;
     this.tweens.add({
       targets: this,
       heroAttackOffsetX: 0,
-      duration: 75,
+      duration: 110,
       ease: 'Quad.easeOut'
     });
 
@@ -1893,11 +1905,17 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.cameras.main.shake(320, 0.024);
     this._showFloatingText(this.lastCheckpoint.x, this.lastCheckpoint.y - 45, '💀 Gugur ke Jurang!', '#E76F51');
     this.player.setVelocity(0, 0);
+    if (this.player.body) {
+      this.player.body.setAllowGravity(false);
+    }
     this.cameras.main.fade(280, 160, 20, 20);
     this.time.delayedCall(320, () => {
       this.hp = this.maxHp;
       this.player.setPosition(this.lastCheckpoint.x, this.lastCheckpoint.y - 35);
       this.player.setVelocity(0, 0);
+      if (this.player.body) {
+        this.player.body.setAllowGravity(true);
+      }
       if (this.heroVisual) this.heroVisual.setPosition(this.lastCheckpoint.x, this.lastCheckpoint.y - 35);
       if (this.playerShadow) this.playerShadow.setPosition(this.lastCheckpoint.x, this.lastCheckpoint.y + 40);
       this.cameras.main.fadeFrom(280, 160, 20, 20);
@@ -2022,7 +2040,10 @@ export class PlatformerScene extends window.Phaser.Scene {
     this.heroVisual.setAngle(0);
 
     let desiredAnim = `${this.heroSheetKey}_idle`;
-    if (time < this.jumpPrepUntil) {
+    if (time < this.attackAnimUntil) {
+      // SEDANG MENYERANG / MENEMBAK: Karakter mengangkat & menyodorkan senjatanya ke depan!
+      desiredAnim = `${this.heroSheetKey}_attack`;
+    } else if (time < this.jumpPrepUntil) {
       // Persiapan loncat -> pose crouch sejenak
       desiredAnim = `${this.heroSheetKey}_crouch`;
     } else if (!onGround) {
@@ -2069,21 +2090,13 @@ export class PlatformerScene extends window.Phaser.Scene {
     if (window.Phaser.Input.Keyboard.JustDown(this.keys.SHIFT)) this.performDash();
     if (window.Phaser.Input.Keyboard.JustDown(this.keys.U)) this.performUltimatePalapa();
 
-    if (this.player.y > 695) {
+    // Jatuh ke jurang di bawah daratan (groundY=668, top=636) -> Langsung Gugur & Respawn!
+    if (this.player.body.bottom > 675 || this.player.y > 640) {
       this._handleAbyssFallDeath();
     }
 
     // 5. Mekanik Khas Stage
-    if (this.stageConfig.id === 1 && !this.brickBridgeBuilt && this.brickTrigger) {
-      if (window.Phaser.Math.Distance.Between(this.player.x, this.player.y, this.brickTrigger.x, this.brickTrigger.y) < 65) {
-        this.brickBridgeBuilt = true;
-        for (let bx = 1152; bx <= 1344; bx += 64) {
-          const t = this.platforms.create(bx, 668, 'tile_brick');
-          t.setDisplaySize(64, 64).refreshBody();
-        }
-        this.audioSys.playQuizFeedback(true);
-      }
-    } else if (this.stageConfig.id === 2) {
+    if (this.stageConfig.id === 2) {
       if (this.jungPlatform) {
         this.jungPlatform.x = 1250 + Math.sin(time * 0.0022) * 95;
         this.jungPlatform.y = 565 + Math.cos(time * 0.003) * 16;
