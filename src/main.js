@@ -19,24 +19,57 @@ const STAGE_BG_MAP = {
   4: './public/assets/environment/bg_stage4_pelataran_agung.png'
 };
 
-const INTRO_SLIDES = [
+const PROLOG_STORY_SLIDES = [
   {
     badge: 'Museum Trowulan · Masa Kini',
-    title: 'Cahaya Medali Surya Majapahit',
-    desc: 'Saat jemarimu menyentuh ukiran Medali Surya Majapahit di dalam etalase kaca, cahaya keemasan berpendar hebat dan menarik kesadaranmu menembus lorong waktu...',
-    icon: 'surya'
+    title: 'Kunjungan Belajar ke Museum Trowulan',
+    desc: 'Di Museum Trowulan, Arka dan Laras mengamati peninggalan kemaharajaan Majapahit. Di sudut ruangan, sebuah etalase tua tampak berdebu dan terlupakan...',
+    img: './public/assets/story/prolog_1_museum.png'
   },
   {
-    badge: 'Lorong Waktu · 1293–1350 M',
-    title: 'Kabut Bayangan Lupa',
-    desc: 'Kabut gelap bernama Bayangan Lupa berusaha menghapus ingatan sejarah Nusantara dari prasasti dan kitab-kitab kuno di ibu kota Majapahit.',
-    icon: 'buku'
+    badge: 'Teror Bayangan Lupa',
+    title: 'Ancaman Terhapusnya Sejarah Bangsa',
+    desc: 'Tiba-tiba, kabut ungu "Bayangan Lupa" merayap menghapus prasasti! Ukiran Medali Surya Majapahit di etalase menyala keemasan memanggil penjaga ingatan.',
+    img: './public/assets/story/prolog_2_medallion.png'
   },
   {
-    badge: 'Gerbang Bentar Trowulan',
-    title: 'Panggilan Pendekar Bhayangkara',
-    desc: 'Di hadapan Gapura Wringin Lawang yang megah, Mahapatih Gajah Mada memanggilmu untuk memulihkan kembali pengetahuan sejarah yang hilang!',
-    icon: 'gapura'
+    badge: 'Lorong Waktu Abad ke-14',
+    title: 'Transformasi Pendekar Bhayangkara',
+    desc: 'Pusaran cahaya keemasan menyedot Arka dan Laras melintasi waktu! Pakaian mereka bertransformasi menjadi zirah merah-emas Pendekar Bhayangkara Nusantara.',
+    img: './public/assets/story/prolog_3_timewarp.png'
+  },
+  {
+    badge: 'Ibu Kota Wilwatikta (1293 M)',
+    title: 'Panggilan Mahapatih Gajah Mada',
+    desc: 'Tiba di depan Gapura Wringin Lawang, Mahapatih Gajah Mada menyambut wibawa: "Bhayangkara muda, kalahkan Bayangan Lupa dan pulihkan sejarah kita!"',
+    img: './public/assets/story/prolog_4_majapahit.png'
+  }
+];
+
+const EPILOG_STORY_SLIDES = [
+  {
+    badge: 'Pelataran Agung · Pemulihan',
+    title: 'Sirnanya Bayangan Lupa & Pulihnya Sang Kala',
+    desc: 'Kabut ungu sirna tak berbekas! Kala Penjaga Candi pulih dari pengaruh gelap, memancarkan aura terakota keemasan dan tersenyum ramah menjaga gerbang suci.',
+    img: './public/assets/story/epilog_1_purification.png'
+  },
+  {
+    badge: 'Penganugerahan Kehormatan',
+    title: 'Apresiasi Mahapatih Gajah Mada',
+    desc: 'Di bawah obor istana, Mahapatih Gajah Mada mengangkat keris keemasan: "Kalian resmi diangkat sebagai Bhayangkara Sejati Penjaga Ingatan Bangsa!"',
+    img: './public/assets/story/epilog_2_gajahmada.png'
+  },
+  {
+    badge: 'Melintasi Arus Waktu',
+    title: 'Kembali ke Museum Trowulan Masa Kini',
+    desc: 'Pendaran lembut Gerbang Waktu membimbing Arka dan Laras kembali ke masa kini. Ruang museum kini bermandikan sinar mentari yang cerah dan damai.',
+    img: './public/assets/story/epilog_3_return_museum.png'
+  },
+  {
+    badge: 'Pustaka Nusantara Terselamatkan',
+    title: 'Sejarah Hidup Abadi di Dada Generasi Bangsa',
+    desc: 'Etalase museum kini berkilau bersih, seluruh artefak Majapahit terselamatkan! Bangsa yang besar adalah bangsa yang senantiasa merawat ingatannya.',
+    img: './public/assets/story/epilog_4_celebration.png'
   }
 ];
 
@@ -77,6 +110,7 @@ class KalaNusantaraApp {
     };
 
     this.introSlideIdx = 0;
+    this.epilogSlideIdx = 0;
     this.loadingFactInterval = null;
     this.displayedGobog = this.storage.state.gobogCoins;
     this.gobogAnimFrame = null;
@@ -144,7 +178,15 @@ class KalaNusantaraApp {
       './public/assets/environment/bg_stage1_trowulan.png',
       './public/assets/environment/bg_stage2_dermaga.png',
       './public/assets/environment/bg_stage3_candi_tikus.png',
-      './public/assets/environment/bg_stage4_pelataran_agung.png'
+      './public/assets/environment/bg_stage4_pelataran_agung.png',
+      './public/assets/story/prolog_1_museum.png',
+      './public/assets/story/prolog_2_medallion.png',
+      './public/assets/story/prolog_3_timewarp.png',
+      './public/assets/story/prolog_4_majapahit.png',
+      './public/assets/story/epilog_1_purification.png',
+      './public/assets/story/epilog_2_gajahmada.png',
+      './public/assets/story/epilog_3_return_museum.png',
+      './public/assets/story/epilog_4_celebration.png'
     ];
 
     const totalSteps = jsonTasks.length + imgUrls.length;
@@ -362,9 +404,16 @@ class KalaNusantaraApp {
       });
     });
 
-    // 2. Navigasi Intro Netral & Tombol Lewati
+    // 2. Navigasi Prolog Storyboard & Tombol Lewati
+    document.getElementById('btn-intro-prev-slide')?.addEventListener('click', () => {
+      if (this.introSlideIdx > 0) {
+        this.introSlideIdx--;
+        this._renderIntroSlide();
+      }
+    });
+
     document.getElementById('btn-intro-next-slide')?.addEventListener('click', () => {
-      if (this.introSlideIdx < INTRO_SLIDES.length - 1) {
+      if (this.introSlideIdx < PROLOG_STORY_SLIDES.length - 1) {
         this.introSlideIdx++;
         this._renderIntroSlide();
       } else {
@@ -617,9 +666,23 @@ class KalaNusantaraApp {
     document.getElementById('btn-result-menu')?.addEventListener('click', () => {
       document.getElementById('hasil-stage-modal')?.classList.add('hidden');
       if (this.activeStage?.id === 4 && this.lastStageClearedSuccess) {
-        this.showModal('epilog-modal');
+        this.openEpilogSequence();
       } else {
         this.stopGameplayAndReturnMenu();
+      }
+    });
+
+    document.getElementById('btn-epilog-prev-slide')?.addEventListener('click', () => {
+      if (this.epilogSlideIdx > 0) {
+        this.epilogSlideIdx--;
+        this._renderEpilogSlide();
+      }
+    });
+
+    document.getElementById('btn-epilog-next-slide')?.addEventListener('click', () => {
+      if (this.epilogSlideIdx < EPILOG_STORY_SLIDES.length - 1) {
+        this.epilogSlideIdx++;
+        this._renderEpilogSlide();
       }
     });
 
@@ -629,6 +692,15 @@ class KalaNusantaraApp {
       setTimeout(() => {
         this._renderRaporModal();
         this.showModal('rapor-modal');
+      }, 360);
+    });
+
+    document.getElementById('btn-epilog-museum')?.addEventListener('click', () => {
+      document.getElementById('epilog-modal')?.classList.add('hidden');
+      this.stopGameplayAndReturnMenu();
+      setTimeout(() => {
+        this._renderMuseumModal();
+        this.showModal('museum-modal');
       }, 360);
     });
 
@@ -655,7 +727,7 @@ class KalaNusantaraApp {
   }
 
   // ==========================================================================
-  // 2. INTRO NETRAL (Video MP4 dengan Fallback Storyboard Netral + Tombol Lewati)
+  // 2. PROLOG STORYBOARD: KUNJUNGAN MUSEUM TROWULAN KE WILWATIKTA (Bagian 2.3)
   // ==========================================================================
   openIntroSequence() {
     this._lockLandscapeAndFullscreen();
@@ -663,56 +735,51 @@ class KalaNusantaraApp {
     this.introSlideIdx = 0;
     this._renderIntroSlide();
 
-    // Tampilkan tombol Lewati setelah 1 detik (Bagian 2.3)
+    // Tampilkan tombol Lewati setelah 1 detik
     const skipBtn = document.getElementById('btn-skip-intro');
     skipBtn?.classList.add('hidden');
     setTimeout(() => {
       skipBtn?.classList.remove('hidden');
     }, 1000);
-
-    // Coba putar video MP4 bila tersedia; bila tidak ada, tetap di Storyboard Netral
-    const videoEl = document.getElementById('intro-video-el');
-    if (videoEl) {
-      videoEl.src = './public/assets/video/intro.mp4';
-      videoEl.onloadeddata = () => {
-        document.getElementById('intro-storyboard-box')?.classList.add('hidden');
-        videoEl.classList.remove('hidden');
-        videoEl.play().catch(() => {});
-      };
-      videoEl.onended = () => this._finishIntroAndProceed();
-      videoEl.onerror = () => {
-        videoEl.classList.add('hidden');
-        document.getElementById('intro-storyboard-box')?.classList.remove('hidden');
-      };
-    }
   }
 
   _renderIntroSlide() {
-    const slide = INTRO_SLIDES[this.introSlideIdx] || INTRO_SLIDES[0];
-    const orb = document.getElementById('intro-orb-icon');
-    if (orb) orb.innerHTML = iconSVG(slide.icon, 34);
+    const slide = PROLOG_STORY_SLIDES[this.introSlideIdx] || PROLOG_STORY_SLIDES[0];
+    const imgEl = document.getElementById('intro-story-img');
+    if (imgEl && slide.img) {
+      imgEl.src = slide.img;
+    }
+
     const badge = document.getElementById('intro-step-badge');
-    if (badge) badge.textContent = `${slide.badge} (${this.introSlideIdx + 1}/${INTRO_SLIDES.length})`;
+    if (badge) badge.textContent = `${slide.badge} (${this.introSlideIdx + 1}/${PROLOG_STORY_SLIDES.length})`;
     const title = document.getElementById('intro-step-title');
     if (title) title.textContent = slide.title;
     const desc = document.getElementById('intro-step-desc');
     if (desc) desc.textContent = slide.desc;
 
+    // Render 4 indikator titik
+    const indContainer = document.getElementById('intro-step-indicators');
+    if (indContainer) {
+      indContainer.innerHTML = PROLOG_STORY_SLIDES.map(
+        (_, i) => `<span class="storyboard-dot ${i === this.introSlideIdx ? 'active' : ''}"></span>`
+      ).join('');
+    }
+
+    const prevBtn = document.getElementById('btn-intro-prev-slide');
+    if (prevBtn) {
+      if (this.introSlideIdx > 0) prevBtn.classList.remove('hidden');
+      else prevBtn.classList.add('hidden');
+    }
+
     const nextBtn = document.getElementById('btn-intro-next-slide');
     if (nextBtn) {
       nextBtn.textContent =
-        this.introSlideIdx === INTRO_SLIDES.length - 1 ? 'Mulai Persiapan Pendekar ▸' : 'Lanjut Cerita ▸';
+        this.introSlideIdx === PROLOG_STORY_SLIDES.length - 1 ? 'Mulai Persiapan Pendekar ▸' : 'Lanjut Cerita ▸';
     }
   }
 
   _finishIntroAndProceed() {
     this.storage.setIntroSeen(true);
-    const videoEl = document.getElementById('intro-video-el');
-    if (videoEl) {
-      try {
-        videoEl.pause();
-      } catch (e) {}
-    }
     this.runWithGapuraTransition(() => {
       document.getElementById('intro-screen')?.classList.add('hidden');
       if (!this.storage.state.profile.setupCompleted) {
@@ -721,6 +788,59 @@ class KalaNusantaraApp {
         this.showBeranda();
       }
     });
+  }
+
+  // ==========================================================================
+  // 2B. EPILOG STORYBOARD: PEMULIHAN SANG KALA & KEMBALI KE MUSEUM TROWULAN
+  // ==========================================================================
+  openEpilogSequence() {
+    this._lockLandscapeAndFullscreen();
+    this.epilogSlideIdx = 0;
+    this._renderEpilogSlide();
+    this.showModal('epilog-modal');
+  }
+
+  _renderEpilogSlide() {
+    const slide = EPILOG_STORY_SLIDES[this.epilogSlideIdx] || EPILOG_STORY_SLIDES[0];
+    const imgEl = document.getElementById('epilog-story-img');
+    if (imgEl && slide.img) {
+      imgEl.src = slide.img;
+    }
+
+    const badge = document.getElementById('epilog-step-badge');
+    if (badge) badge.textContent = `${slide.badge} (${this.epilogSlideIdx + 1}/${EPILOG_STORY_SLIDES.length})`;
+    const title = document.getElementById('epilog-step-title');
+    if (title) title.textContent = slide.title;
+    const desc = document.getElementById('epilog-step-desc');
+    if (desc) desc.textContent = slide.desc;
+
+    // Render 4 indikator titik
+    const indContainer = document.getElementById('epilog-step-indicators');
+    if (indContainer) {
+      indContainer.innerHTML = EPILOG_STORY_SLIDES.map(
+        (_, i) => `<span class="storyboard-dot ${i === this.epilogSlideIdx ? 'active' : ''}"></span>`
+      ).join('');
+    }
+
+    const navBox = document.getElementById('epilog-actions-nav');
+    const finishBox = document.getElementById('epilog-actions-finish');
+    const prevBtn = document.getElementById('btn-epilog-prev-slide');
+    const nextBtn = document.getElementById('btn-epilog-next-slide');
+
+    if (this.epilogSlideIdx === EPILOG_STORY_SLIDES.length - 1) {
+      navBox?.classList.add('hidden');
+      finishBox?.classList.remove('hidden');
+    } else {
+      navBox?.classList.remove('hidden');
+      finishBox?.classList.add('hidden');
+      if (prevBtn) {
+        if (this.epilogSlideIdx > 0) prevBtn.classList.remove('hidden');
+        else prevBtn.classList.add('hidden');
+      }
+      if (nextBtn) {
+        nextBtn.textContent = 'Lanjut Kisah ▸';
+      }
+    }
   }
 
   // ==========================================================================
@@ -2073,8 +2193,9 @@ class KalaNusantaraApp {
         }
       }, 80);
     } else if (v3View === 'epilog') {
-      this.showBeranda();
-      this.showModal('epilog-modal');
+      this.openEpilogSequence();
+    } else if (v3View === 'prolog' || v3View === 'intro') {
+      this.openIntroSequence();
     } else if (v3View === 'settings') {
       this.showBeranda();
       this._renderSettingsModal();

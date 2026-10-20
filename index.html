@@ -74,30 +74,35 @@
   </div>
 
   <!-- ========================================================================
-       2. LAYAR VIDEO / SEKUENS INTRO NETRAL (Hanya Sekali — Bagian 2.3)
+       2. LAYAR PROLOG: KUNJUNGAN MUSEUM TROWULAN KE WILWATIKTA (STORYBOARD CINEMATIC)
        ======================================================================== -->
   <div id="intro-screen" class="hidden">
-    <div class="intro-stage-viewport">
-      <video id="intro-video-el" playsinline style="width:100%;height:100%;object-fit:cover;" class="hidden"></video>
-
-      <!-- Storyboard Netral (Tanpa Wajah Karakter Spesifik) -->
-      <div id="intro-storyboard-box" class="intro-panel-card">
-        <div id="intro-orb-icon" class="intro-medallion-orb"></div>
-        <div id="intro-step-badge" style="font:800 0.75rem var(--font-display);color:var(--emas-light);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;">
-          Museum Trowulan · Masa Kini
-        </div>
-        <h3 id="intro-step-title" style="font:800 1.25rem var(--font-display);color:var(--lontar);margin-bottom:6px;">
-          Cahaya Medali Surya Majapahit
-        </h3>
-        <p id="intro-step-desc" style="font-size:0.92rem;line-height:1.4;color:#f3dcc2;">
-          Saat jemarimu menyentuh ukiran Medali Surya Majapahit di dalam etalase kaca, cahaya keemasan berpendar hebat dan menarik kesadaranmu menembus lorong waktu...
-        </p>
+    <div class="storyboard-container">
+      <div class="storyboard-art-col">
+        <img id="intro-story-img" class="storyboard-img" src="./public/assets/story/prolog_1_museum.png" alt="Prolog Story" />
+        <div class="storyboard-art-glow"></div>
       </div>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-      <button type="button" id="btn-intro-next-slide" class="btn">Lanjut Cerita ▸</button>
-      <button type="button" id="btn-skip-intro" class="btn btn--stone hidden">Lewati Intro ▸▸</button>
+      <div class="storyboard-text-col card-lontar">
+        <i class="hole l"></i><i class="hole r"></i>
+        <div class="storyboard-header">
+          <span id="intro-step-badge" class="storyboard-badge">Museum Trowulan · Masa Kini</span>
+          <div id="intro-step-indicators" class="storyboard-indicators">
+            <span class="storyboard-dot active"></span>
+            <span class="storyboard-dot"></span>
+            <span class="storyboard-dot"></span>
+            <span class="storyboard-dot"></span>
+          </div>
+        </div>
+        <h3 id="intro-step-title" class="storyboard-title">Kunjungan Belajar ke Museum Trowulan</h3>
+        <p id="intro-step-desc" class="storyboard-desc">
+          Pada suatu sore di Museum Trowulan, Arka dan Laras sedang mempelajari peninggalan kemaharajaan Majapahit. Di sudut ruangan, sebuah etalase tua tampak berdebu dan terlupakan...
+        </p>
+        <div class="storyboard-actions">
+          <button type="button" id="btn-intro-prev-slide" class="btn btn--stone hidden">◂ Kembali</button>
+          <button type="button" id="btn-intro-next-slide" class="btn btn--primary">Lanjut Cerita ▸</button>
+          <button type="button" id="btn-skip-intro" class="btn btn--stone">Lewati ▸▸</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -422,16 +427,34 @@
   </div>
 
   <div id="epilog-modal" class="modal-overlay hidden">
-    <div class="balai-lontar-shell">
-      <div class="card-lontar" style="text-align:center;">
+    <div class="storyboard-container epilog-storyboard-container">
+      <div class="storyboard-art-col">
+        <img id="epilog-story-img" class="storyboard-img" src="./public/assets/story/epilog_1_purification.png" alt="Epilog Story" />
+        <div class="storyboard-art-glow"></div>
+      </div>
+      <div class="storyboard-text-col card-lontar">
         <i class="hole l"></i><i class="hole r"></i>
-        <h3>Cahaya Wilwatikta Pulih Kembali!</h3>
-        <p style="font-size:0.95rem;line-height:1.45;">
-          Kabut <b>Bayangan Lupa</b> telah sirna! <b>Kala Penjaga Candi Agung</b> kembali bersinar keemasan menjaga pelataran Trowulan, dan seluruh catatan sejarah Majapahit dari tahun <b>1293 M</b> hingga ikrar <b>Sumpah Palapa (1334 M)</b> berhasil kamu selamatkan!
+        <div class="storyboard-header">
+          <span id="epilog-step-badge" class="storyboard-badge">Pelataran Agung · Purna Tugas</span>
+          <div id="epilog-step-indicators" class="storyboard-indicators">
+            <span class="storyboard-dot active"></span>
+            <span class="storyboard-dot"></span>
+            <span class="storyboard-dot"></span>
+            <span class="storyboard-dot"></span>
+          </div>
+        </div>
+        <h3 id="epilog-step-title" class="storyboard-title">Pemulihan Sang Kala</h3>
+        <p id="epilog-step-desc" class="storyboard-desc">
+          Kabut Lupa telah sirna! Sang Kala Penjaga Candi pulih dari belenggu kegelapan. Ia mengangguk takzim sebagai pelindung suci gerbang keraton yang telah merdeka dari racun lupa.
         </p>
-        <div style="display:flex;justify-content:center;gap:10px;margin-top:10px;">
-          <button type="button" id="btn-epilog-rapor" class="btn btn--lontar">Lihat Lontar Rapor</button>
-          <button type="button" id="btn-epilog-close" class="btn btn--primary">Kembali ke Beranda</button>
+        <div class="storyboard-actions" id="epilog-actions-nav">
+          <button type="button" id="btn-epilog-prev-slide" class="btn btn--stone hidden">◂ Kembali</button>
+          <button type="button" id="btn-epilog-next-slide" class="btn btn--primary">Lanjut Kisah ▸</button>
+        </div>
+        <div class="storyboard-actions hidden" id="epilog-actions-finish" style="gap:6px;flex-wrap:wrap;justify-content:center;">
+          <button type="button" id="btn-epilog-rapor" class="btn btn--lontar">📜 Lontar Rapor Paripurna</button>
+          <button type="button" id="btn-epilog-museum" class="btn btn--stone">🏛️ Ke Museum</button>
+          <button type="button" id="btn-epilog-beranda" class="btn btn--primary">🏠 Beranda</button>
         </div>
       </div>
     </div>
