@@ -1473,6 +1473,14 @@ class KalaNusantaraApp {
             dlg.portrait || './public/assets/characters/npc_gajah_mada.png'
           ),
         onCollectLearningCard: (card) => this.showItemLearningModal(card),
+        onGateRejected: (info) => {
+          this.audio.playQuizFeedback(false);
+          this.showNpcBalloon(
+            stageObj.npcName || 'Mahapatih Gajah Mada',
+            `Berhenti sejenak, Bhayangkara ${this.storage.state.profile.nama}! Kamu baru mengumpulkan ${info.collectedCount} dari ${info.totalRequired} kitab lontar materi sejarah di stage ini. Masih ada ${info.remaining} kitab yang belum kamu pelajari di lantai atas. Jelajahi dan pelajari seluruh materi terlebih dahulu sebelum menghadapi ujianku di Gerbang Waktu!`,
+            './public/assets/characters/npc_gajah_mada.png'
+          );
+        },
         onBossShieldQuestion: (qObj, pillarChoices) => this._updateBossQuestionBanner(qObj, pillarChoices),
         onBannerMessage: (msg) =>
           this.showNpcBalloon(
@@ -1523,6 +1531,14 @@ class KalaNusantaraApp {
     const artCounter = document.getElementById('hud-art-counter');
     if (artCounter) {
       artCounter.innerHTML = `${iconSVG('artefak', 15)} <span>${st.artifactsCount}/3</span>`;
+    }
+
+    const cardCounter = document.getElementById('hud-card-counter');
+    if (cardCounter) {
+      const cCount = st.cardsCount ?? 0;
+      const cTotal = st.totalCards ?? 5;
+      const cardColor = cCount >= cTotal ? '#5eead4' : '#f2d27a';
+      cardCounter.innerHTML = `<span style="font-size:12px;">📖</span> <span style="color:${cardColor};font-weight:600;">Kitab: ${cCount}/${cTotal}</span>`;
     }
 
     // Counter Anak Panah Terbatas (Khusus Senjata Panah)
@@ -1642,6 +1658,25 @@ class KalaNusantaraApp {
   openGerbangWaktu(runData) {
     this.lastStageRunData = runData;
     const collectedCards = runData?.cardsCollected || [];
+    const stageCards = this.cards.filter((c) => c.stage === this.activeStage.id);
+    const totalRequired = stageCards.length;
+
+    // Tolak dan cegah pembukaan soal jika belum semua kartu materi dikumpulkan
+    if (collectedCards.length < totalRequired) {
+      this.audio.playQuizFeedback(false);
+      this.showNpcBalloon(
+        'Mahapatih Gajah Mada',
+        `Berhenti sejenak, Bhayangkara ${this.storage.state.profile.nama}! Kamu baru mengumpulkan ${collectedCards.length} dari ${totalRequired} kitab lontar materi sejarah di stage ini. Masih ada ${totalRequired - collectedCards.length} kitab materi yang belum kamu pelajari di lantai atas. Jelajahi dan pelajari seluruh materi terlebih dahulu sebelum melangkah ke Gerbang Waktu!`,
+        './public/assets/characters/npc_gajah_mada.png'
+      );
+      const scene = this._getActiveScene();
+      if (scene && scene.player) {
+        scene.player.x = 6930;
+        scene.player.setVelocityX(-160);
+        scene.gateTriggered = false;
+      }
+      return;
+    }
 
     // Soal yang ditanyakan Mahapatih Gajah Mada menguji kartu materi yang telah ditemukan!
     let matchingQuestions = [];
@@ -2255,8 +2290,59 @@ class KalaNusantaraApp {
           scene.cameras.main.pan(800, 240, 0);
         }
       }, 80);
-    } else if (v3View === 'stage2') {
+    } else if (v3View === 'stage2' || v3View === 'preview_jung') {
       this.launchGameplayStage(this.stages[1]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body && scene.jungPlatform) {
+          clearInterval(waitReady);
+          document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+          document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          // Tempatkan pemain langsung di atas Anjungan Kapal Jung (x=1250, y=510)
+          scene.player.setPosition(1250, 510);
+          scene.player.setVelocity(0, 0);
+          scene.cameras.main.centerOn(1250, 565);
+        }
+      }, 80);
+    } else if (v3View === 'preview_gate_incomplete') {
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+          document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          // Tempatkan pemain tepat di Gerbang Waktu (x=7010) dengan 0 kartu
+          scene.player.setPosition(7010, 560);
+          scene.cameras.main.scrollX = 6400;
+          setTimeout(() => {
+            scene.cameras.main.scrollX = 6400;
+            // Melangkah masuk ke x >= 7020 untuk memicu evaluasi gerbang
+            scene.player.x = 7025;
+          }, 120);
+        }
+      }, 80);
+    } else if (v3View === 'preview_gate_complete') {
+      this.launchGameplayStage(this.stages[0]);
+      const waitReady = setInterval(() => {
+        const scene = this._getActiveScene();
+        if (scene && scene.player && scene.player.body) {
+          clearInterval(waitReady);
+          document.getElementById('npc-dialog-balloon')?.classList.add('hidden');
+          document.getElementById('stage-intro-splash')?.classList.add('hidden');
+          // Simulasikan pemain sudah mengumpulkan seluruh 5 kartu materi
+          const stageCards = this.cards.filter((c) => c.stage === 1);
+          scene.collectedStageCards = stageCards.map((c) => c.id);
+          scene._syncHUD();
+          // Tempatkan pemain di Gerbang Waktu (x=7010)
+          scene.player.setPosition(7010, 560);
+          scene.cameras.main.scrollX = 6400;
+          setTimeout(() => {
+            scene.cameras.main.scrollX = 6400;
+            scene.player.x = 7025;
+          }, 120);
+        }
+      }, 80);
     } else if (v3View === 'stage3') {
       this.storage.state.profile.karakter = 'laras';
       this.storage.state.profile.senjata = 'tombak';

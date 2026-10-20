@@ -723,6 +723,13 @@ export class PlatformerScene extends window.Phaser.Scene {
     } else if (this.stageConfig.id === 2) {
       this.jungPlatform = this.movingPlatforms.create(1250, 565, 'tile_wood');
       this.jungPlatform.setDisplaySize(192, 40);
+      this.jungPlatform.body.setSize(192, 40);
+      this.jungPlatform.body.setImmovable(true);
+      this.jungPlatform.body.setAllowGravity(false);
+      this.jungPlatform.body.checkCollision.down = false;
+      this.jungPlatform.body.checkCollision.left = false;
+      this.jungPlatform.body.checkCollision.right = false;
+      this.jungPlatform.body.checkCollision.up = true;
       this.jungLabel = this.add.text(1185, 522, 'Anjungan Kapal Jung', {
         fontFamily: 'NusantaraBody, sans-serif',
         fontSize: '12px',
@@ -733,6 +740,13 @@ export class PlatformerScene extends window.Phaser.Scene {
 
       this.jungPlatform2 = this.movingPlatforms.create(3550, 565, 'tile_wood');
       this.jungPlatform2.setDisplaySize(192, 40);
+      this.jungPlatform2.body.setSize(192, 40);
+      this.jungPlatform2.body.setImmovable(true);
+      this.jungPlatform2.body.setAllowGravity(false);
+      this.jungPlatform2.body.checkCollision.down = false;
+      this.jungPlatform2.body.checkCollision.left = false;
+      this.jungPlatform2.body.checkCollision.right = false;
+      this.jungPlatform2.body.checkCollision.up = true;
       this.jungLabel2 = this.add.text(3485, 522, 'Haluan Jung Majapahit', {
         fontFamily: 'NusantaraBody, sans-serif',
         fontSize: '12px',
@@ -868,6 +882,9 @@ export class PlatformerScene extends window.Phaser.Scene {
         backgroundColor: '#061226ee',
         padding: { x: 6, y: 3 }
       }).setOrigin(0.5).setDepth(13);
+
+      cardSprite.setData('auraGfx', aura);
+      cardSprite.setData('labelObj', lbl);
 
       this.tweens.add({
         targets: [cardSprite, aura, lbl],
@@ -1971,6 +1988,8 @@ export class PlatformerScene extends window.Phaser.Scene {
     const s2Ratio = Math.max(0, (this.cdSkill2 - now) / (this.balance.hero.skill2.cooldownSec * 1000));
     const dashRatio = Math.max(0, (this.cdDash - now) / this.balance.hero.dashCooldownMs);
 
+    const totalCards = this.cardsList ? this.cardsList.length : 5;
+
     this.callbacks.onHUDUpdate?.({
       hp: this.hp,
       maxHp: this.maxHp,
@@ -1980,6 +1999,8 @@ export class PlatformerScene extends window.Phaser.Scene {
       maxArrows: this.maxArrows,
       weapon: this.selectedWeapon,
       artifactsCount: this.collectedStageArtifacts.length,
+      cardsCount: this.collectedStageCards.length,
+      totalCards: totalCards,
       cdRatios: { s1: s1Ratio, s2: s2Ratio, dash: dashRatio }
     });
   }
@@ -2097,18 +2118,50 @@ export class PlatformerScene extends window.Phaser.Scene {
 
     // 5. Mekanik Khas Stage
     if (this.stageConfig.id === 2) {
-      if (this.jungPlatform) {
-        this.jungPlatform.x = 1250 + Math.sin(time * 0.0022) * 95;
-        this.jungPlatform.y = 565 + Math.cos(time * 0.003) * 16;
+      if (this.jungPlatform && this.jungPlatform.body) {
+        const prevX = this.jungPlatform.x;
+        this.jungPlatform.x = 1250 + Math.sin(time * 0.0016) * 85;
+        this.jungPlatform.y = 565; // Stabil di Y=565 agar bebas glitch getar / gravitasi
+        const dx = this.jungPlatform.x - prevX;
         this.jungPlatform.body.updateFromGameObject();
+
+        // Jika pemain menapak di atas anjungan kapal jung, bawa gerakan pemain secara mulus
+        const onJung1 = (
+          this.player &&
+          this.player.body &&
+          (this.player.body.touching.down || this.player.body.blocked.down) &&
+          Math.abs(this.player.x - this.jungPlatform.x) < 95 &&
+          this.player.y <= this.jungPlatform.y &&
+          this.player.y >= this.jungPlatform.y - 75
+        );
+        if (onJung1) {
+          this.player.x += dx;
+        }
+
         if (this.jungLabel) {
           this.jungLabel.setPosition(this.jungPlatform.x - 65, this.jungPlatform.y - 42);
         }
       }
-      if (this.jungPlatform2) {
-        this.jungPlatform2.x = 3550 + Math.sin(time * 0.002) * 95;
-        this.jungPlatform2.y = 565 + Math.cos(time * 0.0028) * 16;
+
+      if (this.jungPlatform2 && this.jungPlatform2.body) {
+        const prevX2 = this.jungPlatform2.x;
+        this.jungPlatform2.x = 3550 + Math.sin(time * 0.0014) * 85;
+        this.jungPlatform2.y = 565; // Stabil di Y=565
+        const dx2 = this.jungPlatform2.x - prevX2;
         this.jungPlatform2.body.updateFromGameObject();
+
+        const onJung2 = (
+          this.player &&
+          this.player.body &&
+          (this.player.body.touching.down || this.player.body.blocked.down) &&
+          Math.abs(this.player.x - this.jungPlatform2.x) < 95 &&
+          this.player.y <= this.jungPlatform2.y &&
+          this.player.y >= this.jungPlatform2.y - 75
+        );
+        if (onJung2) {
+          this.player.x += dx2;
+        }
+
         if (this.jungLabel2) {
           this.jungLabel2.setPosition(this.jungPlatform2.x - 65, this.jungPlatform2.y - 42);
         }
@@ -2272,6 +2325,28 @@ export class PlatformerScene extends window.Phaser.Scene {
       if (this.stageConfig.id === 4 && this.bossUnit && this.bossUnit.active) {
         this.player.x = 6980;
       } else {
+        const totalCardsInStage = this.cardsList ? this.cardsList.length : 5;
+        const collectedCount = this.collectedStageCards ? this.collectedStageCards.length : 0;
+
+        if (collectedCount < totalCardsInStage) {
+          // Belum mengumpulkan seluruh item materi pembelajaran! Tolak & beri info arahan
+          this.player.x = 6930;
+          this.player.setVelocityX(-160);
+
+          const now = this.time.now;
+          if (!this.lastGateRejectTime || now - this.lastGateRejectTime > 2500) {
+            this.lastGateRejectTime = now;
+            this.audioSys.playQuizFeedback(false);
+            this._showFloatingText(6950, 520, '⚠️ Kitab Materi Belum Lengkap!', '#E76F51');
+            this.callbacks.onGateRejected?.({
+              collectedCount,
+              totalRequired: totalCardsInStage,
+              remaining: totalCardsInStage - collectedCount
+            });
+          }
+          return;
+        }
+
         this.gateTriggered = true;
         this.player.setVelocity(0, 0);
         const elapsedSec = Math.round((Date.now() - this.stageStartTime) / 1000);
