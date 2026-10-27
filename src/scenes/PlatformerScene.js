@@ -202,7 +202,7 @@ export class PlatformerScene extends window.Phaser.Scene {
           this.anims.create({
             key: `${sKey}_walk`,
             frames: this.anims.generateFrameNumbers(sKey, { frames: [1, 2] }),
-            frameRate: 7,
+            frameRate: 6,
             repeat: -1
           });
         }
@@ -279,7 +279,9 @@ export class PlatformerScene extends window.Phaser.Scene {
 
     this.isRespawning = false;
     this.lastCheckpoint = { x: 140, y: 550 };
-    this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
+    this.cameras.main.startFollow(this.player, true, 0.08, 0.10);
+    this.cameras.main.setDeadzone(100, 50);
+    this.cameras.main.setRoundPixels(true);
 
     // 6. Colliders & Overlaps
     this.physics.add.collider(this.player, this.platforms, () => {
@@ -726,10 +728,8 @@ export class PlatformerScene extends window.Phaser.Scene {
       this.jungPlatform.body.setSize(192, 40);
       this.jungPlatform.body.setImmovable(true);
       this.jungPlatform.body.setAllowGravity(false);
-      this.jungPlatform.body.checkCollision.down = false;
-      this.jungPlatform.body.checkCollision.left = false;
-      this.jungPlatform.body.checkCollision.right = false;
-      this.jungPlatform.body.checkCollision.up = true;
+      this.jungPlatform.body.setFriction(1, 0);
+      this.jungPlatform.body.setVelocityX(50);
       this.jungLabel = this.add.text(1185, 522, 'Anjungan Kapal Jung', {
         fontFamily: 'NusantaraBody, sans-serif',
         fontSize: '12px',
@@ -743,10 +743,8 @@ export class PlatformerScene extends window.Phaser.Scene {
       this.jungPlatform2.body.setSize(192, 40);
       this.jungPlatform2.body.setImmovable(true);
       this.jungPlatform2.body.setAllowGravity(false);
-      this.jungPlatform2.body.checkCollision.down = false;
-      this.jungPlatform2.body.checkCollision.left = false;
-      this.jungPlatform2.body.checkCollision.right = false;
-      this.jungPlatform2.body.checkCollision.up = true;
+      this.jungPlatform2.body.setFriction(1, 0);
+      this.jungPlatform2.body.setVelocityX(45);
       this.jungLabel2 = this.add.text(3485, 522, 'Haluan Jung Majapahit', {
         fontFamily: 'NusantaraBody, sans-serif',
         fontSize: '12px',
@@ -2119,49 +2117,22 @@ export class PlatformerScene extends window.Phaser.Scene {
     // 5. Mekanik Khas Stage
     if (this.stageConfig.id === 2) {
       if (this.jungPlatform && this.jungPlatform.body) {
-        const prevX = this.jungPlatform.x;
-        this.jungPlatform.x = 1250 + Math.sin(time * 0.0016) * 85;
-        this.jungPlatform.y = 565; // Stabil di Y=565 agar bebas glitch getar / gravitasi
-        const dx = this.jungPlatform.x - prevX;
-        this.jungPlatform.body.updateFromGameObject();
-
-        // Jika pemain menapak di atas anjungan kapal jung, bawa gerakan pemain secara mulus
-        const onJung1 = (
-          this.player &&
-          this.player.body &&
-          (this.player.body.touching.down || this.player.body.blocked.down) &&
-          Math.abs(this.player.x - this.jungPlatform.x) < 95 &&
-          this.player.y <= this.jungPlatform.y &&
-          this.player.y >= this.jungPlatform.y - 75
-        );
-        if (onJung1) {
-          this.player.x += dx;
+        if (this.jungPlatform.x >= 1340) {
+          this.jungPlatform.body.setVelocityX(-50);
+        } else if (this.jungPlatform.x <= 1160) {
+          this.jungPlatform.body.setVelocityX(50);
         }
-
         if (this.jungLabel) {
           this.jungLabel.setPosition(this.jungPlatform.x - 65, this.jungPlatform.y - 42);
         }
       }
 
       if (this.jungPlatform2 && this.jungPlatform2.body) {
-        const prevX2 = this.jungPlatform2.x;
-        this.jungPlatform2.x = 3550 + Math.sin(time * 0.0014) * 85;
-        this.jungPlatform2.y = 565; // Stabil di Y=565
-        const dx2 = this.jungPlatform2.x - prevX2;
-        this.jungPlatform2.body.updateFromGameObject();
-
-        const onJung2 = (
-          this.player &&
-          this.player.body &&
-          (this.player.body.touching.down || this.player.body.blocked.down) &&
-          Math.abs(this.player.x - this.jungPlatform2.x) < 95 &&
-          this.player.y <= this.jungPlatform2.y &&
-          this.player.y >= this.jungPlatform2.y - 75
-        );
-        if (onJung2) {
-          this.player.x += dx2;
+        if (this.jungPlatform2.x >= 3640) {
+          this.jungPlatform2.body.setVelocityX(-45);
+        } else if (this.jungPlatform2.x <= 3460) {
+          this.jungPlatform2.body.setVelocityX(45);
         }
-
         if (this.jungLabel2) {
           this.jungLabel2.setPosition(this.jungPlatform2.x - 65, this.jungPlatform2.y - 42);
         }

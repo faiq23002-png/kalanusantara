@@ -2,10 +2,10 @@
   "hero": {
     "maxHp": 100,
     "upgradedMaxHp": 140,
-    "moveSpeed": 250,
+    "moveSpeed": 185,
     "jumpForce": 480,
     "doubleJumpForce": 410,
-    "dashSpeed": 560,
+    "dashSpeed": 440,
     "dashDurationMs": 220,
     "dashCooldownMs": 1200,
     "comboDamage": [15, 20, 35],

@@ -1453,6 +1453,11 @@ class KalaNusantaraApp {
           debug: false
         }
       },
+      render: {
+        pixelArt: false,
+        roundPixels: true,
+        antialias: true
+      },
       scene: [PlatformerScene]
     };
 
